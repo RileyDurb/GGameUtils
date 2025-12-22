@@ -1,0 +1,17 @@
+# User-specific folders or temporary files that should not be versioned.
+Saved/
+Intermediate/
+DerivedDataCache/
+FileOpenOrder/
+obj/
+
+# Things that can be regenerated
+Binaries
+Platforms
+
+# Certain file types that should not be versioned.
+*.pdb
+*-Debug.*
+# Visual Studio files that should be ignored.
+.vs/
+*.sln
