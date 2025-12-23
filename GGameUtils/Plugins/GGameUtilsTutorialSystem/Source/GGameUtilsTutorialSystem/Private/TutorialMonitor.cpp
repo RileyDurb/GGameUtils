@@ -3,6 +3,64 @@
 #include "TutorialMonitor.h"
 #include "TutorialPopupInterface.h"
 
+
+#include "GameFramework/Pawn.h"
+
+void UBaseTutorialConditions::TriggerTutorialStart(UTutorialMonitor* monitorToAddTo)
+{
+	APawn* ownerPawn = Cast<APawn>(monitorToAddTo->GetOwner());
+
+	// Make sure owner is a pawn, put a debug message and return if not
+	if (ownerPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UBaseTutorialConditions:TriggerTutorial:monitor with owner of class %s was not a pawn. Reccomend overriding this function to support your own setup."), * monitorToAddTo->GetOwner()->GetActorNameOrLabel());
+
+		return;
+	}
+
+	mCreatedTutorialWidget = CreateWidget(ownerPawn->GetLocalViewingPlayerController(), mTutorialPopupClass);
+
+	AddTutorialWidget(monitorToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
+
+	mIsActive = true;
+}
+
+void UBaseTutorialConditions::AddTutorialWidget_Implementation(UTutorialMonitor* monitorToAddTo, UUserWidget* widgetPopup)
+{
+	APawn* ownerPawn = Cast<APawn>(monitorToAddTo->GetOwner());
+
+	// Make sure owner is a pawn, put a debug message and return if not
+	if (ownerPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UBaseTutorialConditions:AddTutorialWidget:monitor with owner of class %s was not a pawn. Reccomend overriding this function to support your own setup."), *monitorToAddTo->GetOwner()->GetActorNameOrLabel());
+
+		return;
+	}
+
+	widgetPopup->AddToViewport();
+}
+
+void UBaseTutorialConditions::TriggerTutorialEnd(UTutorialMonitor* monitoToAddTo)
+{
+	// If implements the tutorialpopupinterface, call the tutorial end function
+	if (mCreatedTutorialWidget->GetClass()->ImplementsInterface(UTutorialPopupInterface::StaticClass()))
+	{
+		ITutorialPopupInterface::Execute_TriggerTutorialEnd(mCreatedTutorialWidget); // Calls end interface function
+	}
+	else
+	{
+		mCreatedTutorialWidget->RemoveFromParent(); // Just remove from parent. If making this work on more than just widgets, then remove this part, or find a way to make this the base case
+	}
+
+	/* Immediately sets is active to false, but may need to delay the setting of false till the the animation of the tutorial end completes
+	- One idea is to pass a listener for the widget to call when done
+	- another is to make another interface function that gets the time till the end
+	*/ 
+	mIsActive = false;
+}
+
+
+
 // Sets default values for this component's properties
 UTutorialMonitor::UTutorialMonitor()
 {
@@ -27,6 +85,14 @@ void UTutorialMonitor::BeginPlay()
 		mTutorialStates.Add(static_cast<EManagedTutorialTypes>(i), false);
 	}
 
+	for (int i = 0; i < static_cast<int>(EManagedTutorialTypes::Max); i++)
+	{
+		// If we have a valid tutorial set for this tutorial
+		if (mTutorialDefinitions->mTutorials.Contains(static_cast<EManagedTutorialTypes>(i)) && mTutorialDefinitions->mTutorials[static_cast<EManagedTutorialTypes>(i)] != NULL)
+		{
+			mCreatedTutorials.Add(static_cast<EManagedTutorialTypes>(i), NewObject<UBaseTutorialConditions>(this, mTutorialDefinitions->mTutorials[static_cast<EManagedTutorialTypes>(i)])); // Creates a tutorial of the specificed tutorial info type
+		}
+	}
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds();
 	
 }
@@ -37,7 +103,6 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// TODO: a
 	APawn* owningPawn = Cast<APawn>(GetOwner());
 
 	// Ensure owner is a pawn
@@ -62,7 +127,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		// If tutorial not done
 		if (mTutorialStates[static_cast<EManagedTutorialTypes>(i)] == false)
 		{
-			
+
 			// Prototying specific case for base moving and aim tutorial
 			if (static_cast<EManagedTutorialTypes>(i) == EManagedTutorialTypes::BaseMoveAndAim)
 			{
@@ -72,37 +137,28 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				{
 					mTutorialStates[static_cast<EManagedTutorialTypes>(i)] = true;
 
-					// Remove tutorial widget if we spawned it
-					if (mSpawnedBaseMovementTutorialWidget != nullptr)
+					// If tutorial was activated
+					if (mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsActive())
 					{
-						// If implements the tutorialpopupinterface, call the tutorial end function
-						if (mSpawnedBaseMovementTutorialWidget->GetClass()->ImplementsInterface(UTutorialPopupInterface::StaticClass()))
-						{
-							ITutorialPopupInterface::Execute_TriggerTutorialEnd(mSpawnedBaseMovementTutorialWidget); // Calls end interface function
-						}
-						else
-						{
-							mSpawnedBaseMovementTutorialWidget->RemoveFromParent(); // Just remove from parent. If making this work on more than just widgets, then remove this part, or find a way to make this the base case
-						}
-						mSpawnedBaseMovementTutorialWidget = nullptr;
+						mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialEnd(this);
 					}
 
-					continue; // Tutorial done, contibue to next tutorial if anybhgyuo
+					continue; // Tutorial done, continue to next tutorial if anybhgyuo
 				}
 				else
 				{
-					if (mSpawnedBaseMovementTutorialWidget == nullptr) // If tutorial not already triggered
+					if (mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsActive() == false) // If tutorial not already triggered
 					{
 						// If time is up to trigger tutorial
 						if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp > mWaitTimeBeforeMovementTutorial)
 						{
-							mSpawnedBaseMovementTutorialWidget = TriggerBaseMovementTutorial(mBaseMovementTutorialWidgetClass); // Trigger the blueprint implemented tutorial func, so user can override however the tutorial gets added
+							mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialStart(this);
+							//mSpawnedBaseMovementTutorialWidget = TriggerBaseMovementTutorial(mBaseMovementTutorialWidgetClass); // Trigger the blueprint implemented tutorial func, so user can override however the tutorial gets added
 						}
 					}
 				}
 			}
 		}
 	}
-
 }
 
