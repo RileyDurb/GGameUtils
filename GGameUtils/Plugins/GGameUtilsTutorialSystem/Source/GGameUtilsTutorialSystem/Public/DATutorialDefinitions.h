@@ -2,16 +2,25 @@
 
 #pragma once
 
-//#include "CoreMinimal.h"
-//#include "Engine/DataAsset.h"
-//#include "DATutorialDefinitions.generated.h"
-//
-///**
-// * 
-// */
-//UCLASS()
-//class GGAMEUTILSTUTORIALSYSTEM_API UDATutorialDefinitions : public UDataAsset
-//{
-//	GENERATED_BODY()
-//	
-//};
+#include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
+#include "BaseTutorialConditions.h"
+#include "DATutorialDefinitions.generated.h"
+
+UENUM()
+enum class EManagedTutorialTypes : uint8
+{
+	BaseMoveAndAim,
+	LowHealth,
+	Max
+};
+
+// Class for data asset to hold tutorials, to be transferred to it's own class file once we have a separate place to hold conditions /////////////////////////
+UCLASS(Blueprintable)
+class GGAMEUTILSTUTORIALSYSTEM_API UDATutorialDefinitions : public UDataAsset
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<EManagedTutorialTypes, TSubclassOf<UBaseTutorialConditions>> mTutorials;
+};
