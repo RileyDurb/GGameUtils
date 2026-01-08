@@ -61,6 +61,16 @@ bool UBaseTutorialConditions::CheckTutorialComplete_Implementation(APawn* pawnCo
 	return true;
 }
 
+bool UBaseTutorialConditions::CheckTutorialShouldActivate_Implementation(APawn* pawnContextToUse)
+{
+	return false;
+}
+
+void UBaseTutorialConditions::SetCompleted(bool newCompleted)
+{
+	mIsCurrentlyCompleted = newCompleted;
+}
+
 void UBaseTutorialConditions::TriggerTutorialEnd(APlayerController* controllerContext)
 {
 

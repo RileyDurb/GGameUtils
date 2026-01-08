@@ -33,6 +33,8 @@ protected:
 	// Public to make it a uproperty to manage the lifetime of UObjects, but for private logic use
 	UPROPERTY(BlueprintReadWrite)
 	TMap<EManagedTutorialTypes, TObjectPtr<UBaseTutorialConditions>> mCreatedTutorials; // For holding created tutorials and using in tutorial logic
+
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -42,14 +44,11 @@ public:
 	APlayerController* GetPlayerControllerForTutorial();
 	APlayerController* GetPlayerControllerForTutorial_Implementation();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TempSpecificTutorialChecks")
-	float mWaitTimeBeforeMovementTutorial = 5.0f;
-
 
 	// Public editable variables for setting up tutorials
-
 	UPROPERTY(EditAnywhere)
 	UDATutorialDefinitions* mTutorialDefinitions;
 
-
+private:
+	TArray<EManagedTutorialTypes> nActiveTutorials;
 };

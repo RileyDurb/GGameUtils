@@ -73,33 +73,48 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		// If tutorial not done
 		if (mCreatedTutorials.Contains(static_cast<EManagedTutorialTypes>(i)) && mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsCompleted() == false)
 		{
+			TObjectPtr<UBaseTutorialConditions> currTutorial = mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)];
 
-			// Prototying specific case for base moving and aim tutorial
-			if (static_cast<EManagedTutorialTypes>(i) == EManagedTutorialTypes::BaseMoveAndAim)
+			// Checks if tutorial is complete
+			bool tutorialDone = false;
+			if (currTutorial->IsActive() || currTutorial->CancelIfConpletedBeforeTrigger() == true) // Only checks if tutorial is active, or if it's enabled to be cancelled before it starts, like for a delayed hint
 			{
-				bool tutorialDone = mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->CheckTutorialComplete(owningPawn); // Check if tutorial is complete now
+				tutorialDone = currTutorial->CheckTutorialComplete(owningPawn); // Check if tutorial is complete now
+			}
 
-				if (tutorialDone == true)
+
+			if (tutorialDone == true)
+			{
+
+				// If tutorial was activated
+				if (currTutorial->IsActive())
 				{
+					currTutorial->TriggerTutorialEnd(GetPlayerControllerForTutorial()); // Trigger end sequence
 
-					// If tutorial was activated
-					if (mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsActive())
-					{
-						mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialEnd(GetPlayerControllerForTutorial());
-					}
-
-					continue; // Tutorial done, continue to next tutorial if anybhgyuo
+					nActiveTutorials.Remove(static_cast<EManagedTutorialTypes>(i)); // Tracks that this tutorial is active, so other tutorials can be activated
 				}
-				else
+				else // Count as completed before it begins
 				{
-					if (mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsActive() == false) // If tutorial not already triggered
+					currTutorial->SetCompleted(true);
+				}
+
+				continue; // Tutorial done, continue to next tutorial if anybhgyuo
+			}
+			else
+			{
+				if (currTutorial->IsActive() == false && currTutorial->CheckTutorialShouldActivate(owningPawn) == true) // If tutorial not already triggered
+				{
+					if (nActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
 					{
-						// If time is up to trigger tutorial
-						if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp > mWaitTimeBeforeMovementTutorial)
-						{
-							mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialStart(GetPlayerControllerForTutorial());
-							//mSpawnedBaseMovementTutorialWidget = TriggerBaseMovementTutorial(mBaseMovementTutorialWidgetClass); // Trigger the blueprint implemented tutorial func, so user can override however the tutorial gets added
-						}
+						continue; // Don't activate, only allow one tutorial at a time for now
+						// NOTE: Probably change this to have a bool on tutorials to enable them to cancel other tutorials, or a bool on tutorials to allow them to be cancelled by others. Can also decice if specific tutorials can cancel others
+					}
+					// If time is up to trigger tutorial
+					if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp > currTutorial->FirstTriggerCheckWaitTime())
+					{
+						currTutorial->TriggerTutorialStart(GetPlayerControllerForTutorial());
+
+						nActiveTutorials.Add(static_cast<EManagedTutorialTypes>(i)); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
 					}
 				}
 			}

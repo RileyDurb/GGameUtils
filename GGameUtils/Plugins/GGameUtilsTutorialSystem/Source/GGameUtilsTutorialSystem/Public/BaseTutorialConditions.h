@@ -38,11 +38,21 @@ public:
 	bool CheckTutorialComplete(APawn* pawnContextToUse);
 	virtual bool CheckTutorialComplete_Implementation(APawn* pawnContextToUse);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Conditions")
+	bool CheckTutorialShouldActivate(APawn* pawnContextToUse);
+	virtual bool CheckTutorialShouldActivate_Implementation(APawn* pawnContextToUse);
 
-
+	// Getters and setters ////////////////////////////////////////////////////////////////
+	
 	bool IsActive() { return mIsActive; }
 
 	bool IsCompleted() { return mIsCurrentlyCompleted; }
+
+	bool CancelIfConpletedBeforeTrigger() { return mCancelIfCompletedBeforeTrigger; }
+
+	float FirstTriggerCheckWaitTime() { return mWaitTimeBeforeFirstTriggerCheck; }
+
+	void SetCompleted(bool newCompleted); // For manually setting a tutorial to be completed, like completing the condition before it pops up
 
 	// Blueprint editable variables ///////////////////////////////////////////////////////
 
@@ -54,6 +64,15 @@ public:
 	UPROPERTY()
 	UUserWidget* mCreatedTutorialWidget; // For saving the tutorial widget we spawn
 
+
+protected:
+	// Behaviour Specifications
+	UPROPERTY(EditAnywhere)
+	bool mCancelIfCompletedBeforeTrigger = true;
+
+	// Behaviour Specifications
+	UPROPERTY(EditAnywhere)
+	float mWaitTimeBeforeFirstTriggerCheck = 0.0f;
 
 private:
 	//bool mHasTickCheck
