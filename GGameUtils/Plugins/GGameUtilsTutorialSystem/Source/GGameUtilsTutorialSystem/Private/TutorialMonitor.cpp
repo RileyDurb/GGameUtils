@@ -1,64 +1,8 @@
 // Copyright (c) 2025 Guardbrawl Games
 
 #include "TutorialMonitor.h"
-#include "TutorialPopupInterface.h"
-
 
 #include "GameFramework/Pawn.h"
-
-void UBaseTutorialConditions::TriggerTutorialStart(UTutorialMonitor* monitorToAddTo)
-{
-	APawn* ownerPawn = Cast<APawn>(monitorToAddTo->GetOwner());
-
-	// Make sure owner is a pawn, put a debug message and return if not
-	if (ownerPawn == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UBaseTutorialConditions:TriggerTutorial:monitor with owner of class %s was not a pawn. Reccomend overriding this function to support your own setup."), * monitorToAddTo->GetOwner()->GetActorNameOrLabel());
-
-		return;
-	}
-
-	mCreatedTutorialWidget = CreateWidget(ownerPawn->GetLocalViewingPlayerController(), mTutorialPopupClass);
-
-	AddTutorialWidget(monitorToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
-
-	mIsActive = true;
-}
-
-void UBaseTutorialConditions::AddTutorialWidget_Implementation(UTutorialMonitor* monitorToAddTo, UUserWidget* widgetPopup)
-{
-	APawn* ownerPawn = Cast<APawn>(monitorToAddTo->GetOwner());
-
-	// Make sure owner is a pawn, put a debug message and return if not
-	if (ownerPawn == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UBaseTutorialConditions:AddTutorialWidget:monitor with owner of class %s was not a pawn. Reccomend overriding this function to support your own setup."), *monitorToAddTo->GetOwner()->GetActorNameOrLabel());
-
-		return;
-	}
-
-	widgetPopup->AddToViewport();
-}
-
-void UBaseTutorialConditions::TriggerTutorialEnd(UTutorialMonitor* monitoToAddTo)
-{
-	// If implements the tutorialpopupinterface, call the tutorial end function
-	if (mCreatedTutorialWidget->GetClass()->ImplementsInterface(UTutorialPopupInterface::StaticClass()))
-	{
-		ITutorialPopupInterface::Execute_TriggerTutorialEnd(mCreatedTutorialWidget); // Calls end interface function
-	}
-	else
-	{
-		mCreatedTutorialWidget->RemoveFromParent(); // Just remove from parent. If making this work on more than just widgets, then remove this part, or find a way to make this the base case
-	}
-
-	/* Immediately sets is active to false, but may need to delay the setting of false till the the animation of the tutorial end completes
-	- One idea is to pass a listener for the widget to call when done
-	- another is to make another interface function that gets the time till the end
-	*/ 
-	mIsActive = false;
-}
-
 
 
 // Sets default values for this component's properties
@@ -79,12 +23,6 @@ void UTutorialMonitor::BeginPlay()
 
 	// ...
 
-	// Initialize tutorial states by adding a tutorial state for each tutorial, defaulting to unfinished
-	for (int i = 0; i < static_cast<int>(EManagedTutorialTypes::Max); i++)
-	{
-		mTutorialStates.Add(static_cast<EManagedTutorialTypes>(i), false);
-	}
-
 	for (int i = 0; i < static_cast<int>(EManagedTutorialTypes::Max); i++)
 	{
 		// If we have a valid tutorial set for this tutorial
@@ -103,12 +41,20 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	APawn* owningPawn = Cast<APawn>(GetOwner());
+	APlayerController* playerController = GetPlayerControllerForTutorial();
+
+	if (playerController == nullptr)
+	{
+		ENetMode currNetMode = GetNetMode();
+		UE_LOG(LogTemp, Warning, TEXT("TutorialMonitor:TickComponent: Owner does not have a valid player controller at this time. NetMode: %i"), currNetMode);
+		return;
+	}
+	APawn* owningPawn = playerController->GetPawn();
 
 	// Ensure owner is a pawn
 	if (owningPawn == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TutorialMonitor:TickComponent: Owner is not a pawn, make sure it's attached to a pawn instead"));
+		UE_LOG(LogTemp, Warning, TEXT("TutorialMonitor:TickComponent: Owner is not a pawn, make sure it's attached to a pawn, or override the get owning player controller function"));
 		return;
 	}
 	else // Ensure this is a locally controlled real player
@@ -125,22 +71,21 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	for (int i = 0; i < static_cast<int>(EManagedTutorialTypes::Max); i++)
 	{
 		// If tutorial not done
-		if (mTutorialStates[static_cast<EManagedTutorialTypes>(i)] == false)
+		if (mCreatedTutorials.Contains(static_cast<EManagedTutorialTypes>(i)) && mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsCompleted() == false)
 		{
 
 			// Prototying specific case for base moving and aim tutorial
 			if (static_cast<EManagedTutorialTypes>(i) == EManagedTutorialTypes::BaseMoveAndAim)
 			{
-				bool tutorialDone = CheckBaseMoveTutorialComplete(); // Check if tutorial is complete now
+				bool tutorialDone = mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->CheckTutorialComplete(owningPawn); // Check if tutorial is complete now
 
 				if (tutorialDone == true)
 				{
-					mTutorialStates[static_cast<EManagedTutorialTypes>(i)] = true;
 
 					// If tutorial was activated
 					if (mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsActive())
 					{
-						mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialEnd(this);
+						mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialEnd(GetPlayerControllerForTutorial());
 					}
 
 					continue; // Tutorial done, continue to next tutorial if anybhgyuo
@@ -152,7 +97,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 						// If time is up to trigger tutorial
 						if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp > mWaitTimeBeforeMovementTutorial)
 						{
-							mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialStart(this);
+							mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->TriggerTutorialStart(GetPlayerControllerForTutorial());
 							//mSpawnedBaseMovementTutorialWidget = TriggerBaseMovementTutorial(mBaseMovementTutorialWidgetClass); // Trigger the blueprint implemented tutorial func, so user can override however the tutorial gets added
 						}
 					}
@@ -160,5 +105,19 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			}
 		}
 	}
+}
+
+APlayerController* UTutorialMonitor::GetPlayerControllerForTutorial_Implementation()
+{
+	APawn* ownerPawn = Cast<APawn>(GetOwner());
+
+	// Make sure owner is a pawn, put a debug message and return if not
+	if (ownerPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetPlayerControllerForTutoriall:monitor with owner of class %s was not a pawn. Reccomend overriding this function based on what it is owned by to get the player controller to use to create the tutorial."), *ownerPawn->GetActorNameOrLabel());
+
+		return nullptr;
+	}
+	return Cast<APlayerController>(ownerPawn->GetController());
 }
 
