@@ -45,6 +45,9 @@ public:
 	APlayerController* GetPlayerControllerForTutorial();
 	APlayerController* GetPlayerControllerForTutorial_Implementation();
 
+	UFUNCTION(BlueprintCallable, Category= "TutorialTriggering")
+	bool TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger);
+
 
 	// Public editable variables for setting up tutorials
 	UPROPERTY(EditAnywhere)
