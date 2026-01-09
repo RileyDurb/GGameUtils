@@ -23,12 +23,12 @@ void UTutorialMonitor::BeginPlay()
 
 	// ...
 
-	for (int i = 0; i < static_cast<int>(EManagedTutorialTypes::Max); i++)
+	for (auto it = mTutorialDefinitions->mTutorials.begin(); it != mTutorialDefinitions->mTutorials.end(); ++it)
 	{
 		// If we have a valid tutorial set for this tutorial
-		if (mTutorialDefinitions->mTutorials.Contains(static_cast<EManagedTutorialTypes>(i)) && mTutorialDefinitions->mTutorials[static_cast<EManagedTutorialTypes>(i)] != NULL)
+		if (mTutorialDefinitions->mTutorials[it->Key] != NULL)
 		{
-			mCreatedTutorials.Add(static_cast<EManagedTutorialTypes>(i), NewObject<UBaseTutorialConditions>(this, mTutorialDefinitions->mTutorials[static_cast<EManagedTutorialTypes>(i)])); // Creates a tutorial of the specificed tutorial info type
+			mCreatedTutorials.Add(it->Key, NewObject<UBaseTutorialConditions>(this, mTutorialDefinitions->mTutorials[it->Key])); // Creates a tutorial of the specificed tutorial type
 		}
 	}
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds();
@@ -68,12 +68,16 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 
 	// Checks all tutorials, and updates the ones that haven't been completed
-	for (int i = 0; i < static_cast<int>(EManagedTutorialTypes::Max); i++)
+	for (auto it = mCreatedTutorials.begin(); it != mCreatedTutorials.end(); ++it)
 	{
+		TObjectPtr<UBaseTutorialConditions> currTutorial = (*it).Value;
+
+		FGameplayTag tutorialTag = (*it).Key;
+
 		// If tutorial not done
-		if (mCreatedTutorials.Contains(static_cast<EManagedTutorialTypes>(i)) && mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)]->IsCompleted() == false)
+		if (currTutorial->IsCompleted() == false)
 		{
-			TObjectPtr<UBaseTutorialConditions> currTutorial = mCreatedTutorials[static_cast<EManagedTutorialTypes>(i)];
+
 
 			// Checks if tutorial is complete
 			bool tutorialDone = false;
@@ -91,14 +95,14 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				{
 					currTutorial->TriggerTutorialEnd(GetPlayerControllerForTutorial()); // Trigger end sequence
 
-					nActiveTutorials.Remove(static_cast<EManagedTutorialTypes>(i)); // Tracks that this tutorial is active, so other tutorials can be activated
+					nActiveTutorials.RemoveTag(tutorialTag); // Tracks that this tutorial is no longer active, so other tutorials can be activated
 				}
 				else // Count as completed before it begins
 				{
 					currTutorial->SetCompleted(true);
 				}
 
-				continue; // Tutorial done, continue to next tutorial if anybhgyuo
+				continue; // Tutorial done, continue to next tutorial if any
 			}
 			else
 			{
@@ -114,7 +118,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 					{
 						currTutorial->TriggerTutorialStart(GetPlayerControllerForTutorial());
 
-						nActiveTutorials.Add(static_cast<EManagedTutorialTypes>(i)); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
+						nActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
 					}
 				}
 			}

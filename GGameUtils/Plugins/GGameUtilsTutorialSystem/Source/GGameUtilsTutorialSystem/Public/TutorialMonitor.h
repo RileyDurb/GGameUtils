@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
 
 #include "BaseTutorialConditions.h"
 #include "DATutorialDefinitions.h"
@@ -32,7 +33,7 @@ protected:
 
 	// Public to make it a uproperty to manage the lifetime of UObjects, but for private logic use
 	UPROPERTY(BlueprintReadWrite)
-	TMap<EManagedTutorialTypes, TObjectPtr<UBaseTutorialConditions>> mCreatedTutorials; // For holding created tutorials and using in tutorial logic
+	TMap<FGameplayTag, TObjectPtr<UBaseTutorialConditions>> mCreatedTutorials; // For holding created tutorials and using in tutorial logic
 
 
 public:	
@@ -50,5 +51,5 @@ public:
 	UDATutorialDefinitions* mTutorialDefinitions;
 
 private:
-	TArray<EManagedTutorialTypes> nActiveTutorials;
+	FGameplayTagContainer nActiveTutorials;
 };
