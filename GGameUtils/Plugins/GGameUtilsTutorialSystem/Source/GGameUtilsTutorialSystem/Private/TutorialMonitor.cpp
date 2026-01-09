@@ -23,16 +23,18 @@ void UTutorialMonitor::BeginPlay()
 
 	// ...
 
+	mInitTimestamp = GetWorld()->GetRealTimeSeconds();
+
 	for (auto it = mTutorialDefinitions->mTutorials.begin(); it != mTutorialDefinitions->mTutorials.end(); ++it)
 	{
 		// If we have a valid tutorial set for this tutorial
 		if (mTutorialDefinitions->mTutorials[it->Key] != NULL)
 		{
 			mCreatedTutorials.Add(it->Key, NewObject<UBaseTutorialConditions>(this, mTutorialDefinitions->mTutorials[it->Key])); // Creates a tutorial of the specificed tutorial type
+
+			mCreatedTutorials[it->Key]->SetInitTimestamp(mInitTimestamp);
 		}
 	}
-	mInitTimestamp = GetWorld()->GetRealTimeSeconds();
-	
 }
 
 
@@ -78,7 +80,6 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		if (currTutorial->IsCompleted() == false)
 		{
 
-
 			// Checks if tutorial is complete
 			bool tutorialDone = false;
 			if (currTutorial->IsActive() || currTutorial->CancelIfConpletedBeforeTrigger() == true) // Only checks if tutorial is active, or if it's enabled to be cancelled before it starts, like for a delayed hint
@@ -86,7 +87,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				tutorialDone = currTutorial->CheckTutorialComplete(owningPawn); // Check if tutorial is complete now
 			}
 
-
+			// If complete, handle finishing tutorial
 			if (tutorialDone == true)
 			{
 
@@ -101,25 +102,32 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				{
 					currTutorial->SetCompleted(true);
 				}
-
-				continue; // Tutorial done, continue to next tutorial if any
 			}
 			else
 			{
-				if (currTutorial->IsActive() == false && currTutorial->CheckTutorialShouldActivate(owningPawn) == true) // If tutorial not already triggered
+				if (currTutorial->IsActive() == false								// if not already active
+				&& 
+				(currTutorial->CheckTutorialShouldActivate(owningPawn) == true   // If activation condition is met
+				|| currTutorial->WasManuallyTriggered()))						    // Or was manually triggered
 				{
+
 					if (nActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
 					{
 						continue; // Don't activate, only allow one tutorial at a time for now
 						// NOTE: Probably change this to have a bool on tutorials to enable them to cancel other tutorials, or a bool on tutorials to allow them to be cancelled by others. Can also decice if specific tutorials can cancel others
 					}
-					// If time is up to trigger tutorial
-					if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp > currTutorial->FirstTriggerCheckWaitTime())
-					{
-						currTutorial->TriggerTutorialStart(GetPlayerControllerForTutorial());
 
-						nActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
+					// If there is wait time left before we should trigger tutorial
+					if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp <= currTutorial->FirstTriggerCheckWaitTime())
+					{
+						continue; // Skip this for now, wait until time has elapsed
 					}
+
+
+					// If reaching here, trigger tutorial
+					currTutorial->TriggerTutorialStart(GetPlayerControllerForTutorial());
+
+					nActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
 				}
 			}
 		}
@@ -138,5 +146,23 @@ APlayerController* UTutorialMonitor::GetPlayerControllerForTutorial_Implementati
 		return nullptr;
 	}
 	return Cast<APlayerController>(ownerPawn->GetController());
+}
+
+bool UTutorialMonitor::TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger)
+{
+	if (mCreatedTutorials.Contains(tutorialToTrigger) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:TryQueueTutorialTrigger:tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToTrigger.GetTagName());
+		return false;
+	}
+
+	if (mCreatedTutorials[tutorialToTrigger]->WasManuallyTriggered()) // Don't let it trigger multiple times. NOTE: If we want autorial to be triggered more than once, need to implement resetting it
+	{
+		return false;
+	}
+
+	mCreatedTutorials[tutorialToTrigger]->SetManuallyTriggered(true);
+
+	return true;
 }
 

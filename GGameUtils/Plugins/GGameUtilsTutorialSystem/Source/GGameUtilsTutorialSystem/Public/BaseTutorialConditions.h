@@ -42,6 +42,10 @@ public:
 	bool CheckTutorialShouldActivate(APawn* pawnContextToUse);
 	virtual bool CheckTutorialShouldActivate_Implementation(APawn* pawnContextToUse);
 
+	// Parent Overriden functions
+	UFUNCTION(BlueprintCallable)
+	UWorld* GetWorld() const override;
+
 	// Getters and setters ////////////////////////////////////////////////////////////////
 	
 	bool IsActive() { return mIsActive; }
@@ -52,7 +56,16 @@ public:
 
 	float FirstTriggerCheckWaitTime() { return mWaitTimeBeforeFirstTriggerCheck; }
 
+	bool WasManuallyTriggered() { return mWasManuallyTriggered; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersNSetters")
+	float GetInitTimestamp() { return mInitTimestamp; }
+
 	void SetCompleted(bool newCompleted); // For manually setting a tutorial to be completed, like completing the condition before it pops up
+
+	void SetManuallyTriggered(bool newTriggered);
+
+	void SetInitTimestamp(float timestamp);
 
 	// Blueprint editable variables ///////////////////////////////////////////////////////
 
@@ -67,11 +80,11 @@ public:
 
 protected:
 	// Behaviour Specifications
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	bool mCancelIfCompletedBeforeTrigger = true;
 
 	// Behaviour Specifications
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float mWaitTimeBeforeFirstTriggerCheck = 0.0f;
 
 private:
@@ -80,4 +93,8 @@ private:
 	bool mIsActive = false;
 
 	bool mIsCurrentlyCompleted = false;
+
+	bool mWasManuallyTriggered = false;
+
+	float mInitTimestamp = 0.0f;
 };

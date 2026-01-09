@@ -66,9 +66,24 @@ bool UBaseTutorialConditions::CheckTutorialShouldActivate_Implementation(APawn* 
 	return false;
 }
 
+UWorld* UBaseTutorialConditions::GetWorld() const
+{
+	return GetOuter()->GetWorld(); // Returns parent's world
+}
+
 void UBaseTutorialConditions::SetCompleted(bool newCompleted)
 {
 	mIsCurrentlyCompleted = newCompleted;
+}
+
+void UBaseTutorialConditions::SetManuallyTriggered(bool newTriggered)
+{
+	mWasManuallyTriggered = newTriggered;
+}
+
+void UBaseTutorialConditions::SetInitTimestamp(float timestamp)
+{
+	mInitTimestamp = timestamp;
 }
 
 void UBaseTutorialConditions::TriggerTutorialEnd(APlayerController* controllerContext)
