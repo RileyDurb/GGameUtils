@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Guardbrawl Games
 
 #include "TutorialMonitor.h"
+#include "TutorialSaveGameInstance.h"
 
 #include "GameFramework/Pawn.h"
 
@@ -33,6 +34,13 @@ void UTutorialMonitor::BeginPlay()
 			mCreatedTutorials.Add(it->Key, NewObject<UBaseTutorialConditions>(this, mTutorialDefinitions->mTutorials[it->Key])); // Creates a tutorial of the specificed tutorial type
 
 			mCreatedTutorials[it->Key]->SetInitTimestamp(mInitTimestamp);
+
+			// Check for if tutorial has already been completed from the tutorial saves, and mark as complete if it is so it doesn't trigger
+			UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+			if (tutorialSaves->GetTutorialCanTrigger(it->Key) == false)
+			{
+				mCreatedTutorials[it->Key]->SetCompleted(true);
+			}
 		}
 	}
 }
@@ -108,6 +116,10 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				{
 					currTutorial->SetCompleted(true);
 				}
+
+				// Marks tutorial completion in the game instance subsystem for saving them. NOTE: Currently doesn not save this to a save game, plan is to add that
+				UTutorialSaveGameInstance* tutorialSaves = GetWorld()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+				tutorialSaves->MarkTutorialCompletion(tutorialTag);
 			}
 			else // If not complete, check if tutorial should start, and start it if so
 			{
@@ -116,12 +128,21 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				(currTutorial->CheckTutorialShouldActivate(owningPawn) == true   // If activation condition is met
 				|| currTutorial->WasManuallyTriggered()))						    // Or was manually triggered
 				{
+					// Check for if tutorial has already been completed from the tutorial saves, and skip + mark as complete if it is
+					UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+					if (tutorialSaves->GetTutorialCanTrigger(tutorialTag) == false)
+					{
+						currTutorial->SetCompleted(true);
+
+						continue; // Tutorial is done, skip it, and it won't trigger again since we set it to complete
+					}
 
 					if (mActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
 					{
 						continue; // Don't activate, only allow one tutorial at a time for now
 						// NOTE: Probably change this to have a bool on tutorials to enable them to cancel other tutorials, or a bool on tutorials to allow them to be cancelled by others. Can also decice if specific tutorials can cancel others
 					}
+
 
 					// If there is wait time left before we should trigger tutorial
 					if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp <= currTutorial->FirstTriggerCheckWaitTime())
