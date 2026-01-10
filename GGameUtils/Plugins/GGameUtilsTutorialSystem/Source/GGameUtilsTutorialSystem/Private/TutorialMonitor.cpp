@@ -69,7 +69,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 	}
 
-	// Checks all tutorials, and updates the ones that haven't been completed
+	// Checks all tutorials, and updates the ones that haven't been completed, triggering their starts or completions accordingly
 	for (auto it = mCreatedTutorials.begin(); it != mCreatedTutorials.end(); ++it)
 	{
 		TObjectPtr<UBaseTutorialConditions> currTutorial = (*it).Value;
@@ -87,6 +87,12 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				tutorialDone = currTutorial->CheckTutorialComplete(owningPawn); // Check if tutorial is complete now
 			}
 
+			// Apply manual completion if that's been triggered
+			if (currTutorial->WasManuallyCompleted())
+			{
+				tutorialDone = true;
+			}
+
 			// If complete, handle finishing tutorial
 			if (tutorialDone == true)
 			{
@@ -96,14 +102,14 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				{
 					currTutorial->TriggerTutorialEnd(GetPlayerControllerForTutorial()); // Trigger end sequence
 
-					nActiveTutorials.RemoveTag(tutorialTag); // Tracks that this tutorial is no longer active, so other tutorials can be activated
+					mActiveTutorials.RemoveTag(tutorialTag); // Tracks that this tutorial is no longer active, so other tutorials can be activated
 				}
 				else // Count as completed before it begins
 				{
 					currTutorial->SetCompleted(true);
 				}
 			}
-			else
+			else // If not complete, check if tutorial should start, and start it if so
 			{
 				if (currTutorial->IsActive() == false								// if not already active
 				&& 
@@ -111,7 +117,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				|| currTutorial->WasManuallyTriggered()))						    // Or was manually triggered
 				{
 
-					if (nActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
+					if (mActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
 					{
 						continue; // Don't activate, only allow one tutorial at a time for now
 						// NOTE: Probably change this to have a bool on tutorials to enable them to cancel other tutorials, or a bool on tutorials to allow them to be cancelled by others. Can also decice if specific tutorials can cancel others
@@ -127,7 +133,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 					// If reaching here, trigger tutorial
 					currTutorial->TriggerTutorialStart(GetPlayerControllerForTutorial());
 
-					nActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
+					mActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
 				}
 			}
 		}
@@ -164,5 +170,29 @@ bool UTutorialMonitor::TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger)
 	mCreatedTutorials[tutorialToTrigger]->SetManuallyTriggered(true);
 
 	return true;
+}
+
+bool UTutorialMonitor::TryQueueTutorialComplete(FGameplayTag tutorialToEnd)
+{
+	if (mCreatedTutorials.Contains(tutorialToEnd) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:TryTriggerTutorialComplete:tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToEnd.GetTagName());
+		return false;
+	}
+
+
+	if (mCreatedTutorials[tutorialToEnd]->WasManuallyCompleted()) // Don't let it trigger the completion multiple times. NOTE: If we want autorial to be completed more than once, need to implement resetting it
+	{
+		return false;
+	}
+
+	mCreatedTutorials[tutorialToEnd]->SetManuallyCompleted(true);
+
+	return false;
+}
+
+FTutorialCompleteTriggerFunc UTutorialMonitor::GetTriggerTutorialCompleteDelegate(FGameplayTag tutorialToEnd)
+{
+	return mCreatedTutorials[tutorialToEnd]->GetTutorialCompleteTriggerDelegate();
 }
 

@@ -6,8 +6,12 @@
 //#include "CoreMinimal.h"
 //#include "UObject/NoExportTypes.h"
 //#include "TutorialMonitor.h"
+#include "StructDefinitionsFile.h"
 #include "BaseTutorialConditions.generated.h"
 
+
+
+DECLARE_DYNAMIC_DELEGATE(FTutorialCompleteTriggerFunc);
 
 // Class for tutorial conditions, to be transferred to it's own class file once we have a separate place to hold conditions /////////////////////////
 UCLASS(Blueprintable)
@@ -58,12 +62,21 @@ public:
 
 	bool WasManuallyTriggered() { return mWasManuallyTriggered; }
 
+	bool WasManuallyCompleted() { return mWasManuallyCompleted; }
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersNSetters")
 	float GetInitTimestamp() { return mInitTimestamp; }
+
+	FTutorialCompleteTriggerFunc GetTutorialCompleteTriggerDelegate(); // Gets a delegate that manually completes the tutorial when invoked
 
 	void SetCompleted(bool newCompleted); // For manually setting a tutorial to be completed, like completing the condition before it pops up
 
 	void SetManuallyTriggered(bool newTriggered);
+
+	void SetManuallyCompleted(bool newManuallyCompleted);
+
+	UFUNCTION()
+	void TrySetManuallyCompleted();
 
 	void SetInitTimestamp(float timestamp);
 
@@ -87,6 +100,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float mWaitTimeBeforeFirstTriggerCheck = 0.0f;
 
+	UPROPERTY(EditAnywhere)
+	bool mUseVisualDataOverride = true;
+
+	UPROPERTY(EditAnywhere)
+	FTutorialBasicVisualsData mVisualData;
+
+
 private:
 	//bool mHasTickCheck
 
@@ -96,5 +116,8 @@ private:
 
 	bool mWasManuallyTriggered = false;
 
+	bool mWasManuallyCompleted = false;
+
 	float mInitTimestamp = 0.0f;
+
 };

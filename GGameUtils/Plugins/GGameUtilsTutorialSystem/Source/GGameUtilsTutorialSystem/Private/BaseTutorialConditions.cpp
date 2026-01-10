@@ -44,6 +44,16 @@ void UBaseTutorialConditions::TriggerTutorialStart(APlayerController* controller
 
 	mCreatedTutorialWidget = CreateWidget(controllerToUse, mTutorialPopupClass);
 
+	if (mUseVisualDataOverride)
+	{
+		if (mCreatedTutorialWidget->GetClass()->ImplementsInterface(UTutorialPopupInterface::StaticClass()))
+		{
+
+			ITutorialPopupInterface::Execute_ApplyVisualDataOverride(mCreatedTutorialWidget, mVisualData);
+		}
+	}
+
+
 	AddTutorialWidget(controllerToUse, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
 
 	mIsActive = true;
@@ -71,6 +81,14 @@ UWorld* UBaseTutorialConditions::GetWorld() const
 	return GetOuter()->GetWorld(); // Returns parent's world
 }
 
+FTutorialCompleteTriggerFunc UBaseTutorialConditions::GetTutorialCompleteTriggerDelegate()
+{
+	FTutorialCompleteTriggerFunc triggerFunc;
+	triggerFunc.BindUFunction(this, "TrySetManuallyCompleted");
+
+	return triggerFunc;
+}
+
 void UBaseTutorialConditions::SetCompleted(bool newCompleted)
 {
 	mIsCurrentlyCompleted = newCompleted;
@@ -79,6 +97,20 @@ void UBaseTutorialConditions::SetCompleted(bool newCompleted)
 void UBaseTutorialConditions::SetManuallyTriggered(bool newTriggered)
 {
 	mWasManuallyTriggered = newTriggered;
+}
+
+void UBaseTutorialConditions::SetManuallyCompleted(bool newManuallyCompleted)
+{
+	mWasManuallyCompleted = newManuallyCompleted;
+}
+
+// Bindable Version that doesn't take a parameter
+void UBaseTutorialConditions::TrySetManuallyCompleted()
+{
+	if (mWasManuallyCompleted == false)
+	{
+		mWasManuallyCompleted = true;
+	}
 }
 
 void UBaseTutorialConditions::SetInitTimestamp(float timestamp)

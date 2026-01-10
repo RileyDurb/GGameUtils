@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "StructDefinitionsFile.h"
 #include "TutorialPopupInterface.generated.h"
 
 // This class does not need to be modified.
@@ -25,4 +26,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void TriggerTutorialEnd();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ApplyVisualDataOverride(FTutorialBasicVisualsData visualDataToUse);
 };
