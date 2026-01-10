@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
+//#include "TimerManager.h"
 
 #include "BaseTutorialConditions.h"
 #include "DATutorialDefinitions.h"
@@ -15,6 +16,7 @@
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class GGAMEUTILSTUTORIALSYSTEM_API UTutorialMonitor : public UActorComponent
@@ -47,6 +49,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category= "TutorialTriggering")
 	bool TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger);
+
+	UFUNCTION(BlueprintCallable, Category="TutorialEnding")
+	FTutorialCompleteTriggerFunc GetTriggerTutorialCompleteDelegate(FGameplayTag tutorialToEnd);
+
+	UFUNCTION(BlueprintCallable, Category = "TutorialEnding")
+	bool TryQueueTutorialComplete(FGameplayTag tutorialToEnd);
 
 
 	// Public editable variables for setting up tutorials

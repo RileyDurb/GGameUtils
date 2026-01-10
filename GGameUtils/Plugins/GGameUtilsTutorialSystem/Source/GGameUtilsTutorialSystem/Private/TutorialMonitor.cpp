@@ -69,7 +69,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 	}
 
-	// Checks all tutorials, and updates the ones that haven't been completed
+	// Checks all tutorials, and updates the ones that haven't been completed, triggering their starts or completions accordingly
 	for (auto it = mCreatedTutorials.begin(); it != mCreatedTutorials.end(); ++it)
 	{
 		TObjectPtr<UBaseTutorialConditions> currTutorial = (*it).Value;
@@ -85,6 +85,12 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			if (currTutorial->IsActive() || currTutorial->CancelIfConpletedBeforeTrigger() == true) // Only checks if tutorial is active, or if it's enabled to be cancelled before it starts, like for a delayed hint
 			{
 				tutorialDone = currTutorial->CheckTutorialComplete(owningPawn); // Check if tutorial is complete now
+			}
+
+			// Apply manual completion if that's been triggered
+			if (currTutorial->WasManuallyCompleted())
+			{
+				tutorialDone = true;
 			}
 
 			// If complete, handle finishing tutorial
@@ -103,7 +109,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 					currTutorial->SetCompleted(true);
 				}
 			}
-			else
+			else // If not complete, check if tutorial should start, and start it if so
 			{
 				if (currTutorial->IsActive() == false								// if not already active
 				&& 
@@ -164,5 +170,29 @@ bool UTutorialMonitor::TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger)
 	mCreatedTutorials[tutorialToTrigger]->SetManuallyTriggered(true);
 
 	return true;
+}
+
+bool UTutorialMonitor::TryQueueTutorialComplete(FGameplayTag tutorialToEnd)
+{
+	if (mCreatedTutorials.Contains(tutorialToEnd) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:TryTriggerTutorialComplete:tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToEnd.GetTagName());
+		return false;
+	}
+
+
+	if (mCreatedTutorials[tutorialToEnd]->WasManuallyCompleted()) // Don't let it trigger the completion multiple times. NOTE: If we want autorial to be completed more than once, need to implement resetting it
+	{
+		return false;
+	}
+
+	mCreatedTutorials[tutorialToEnd]->SetManuallyCompleted(true);
+
+	return false;
+}
+
+FTutorialCompleteTriggerFunc UTutorialMonitor::GetTriggerTutorialCompleteDelegate(FGameplayTag tutorialToEnd)
+{
+	return mCreatedTutorials[tutorialToEnd]->GetTutorialCompleteTriggerDelegate();
 }
 

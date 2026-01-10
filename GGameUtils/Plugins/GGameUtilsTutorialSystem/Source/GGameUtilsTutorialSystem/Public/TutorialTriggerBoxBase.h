@@ -6,6 +6,7 @@
 #include "Engine/TriggerBox.h"
 
 #include "GameplayTagContainer.h"
+#include "TutorialMonitor.h"
 #include "TutorialTriggerBoxBase.generated.h"
 
 /**
@@ -23,6 +24,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool ShouldTriggerFromActor(AActor* otherActor); 
 	bool ShouldTriggerFromActor_Implementation(AActor* otherActor);
+
+	// Gets the tutorial monitor from the given actor.
+	// By default, makes sure it's a pawn, and then tries to get the component directly from the pawn, and if that doesn't work, tries to get it from the pawn's controller, to support attaching to the pawn or the player controller
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UTutorialMonitor* GetTutorialMonitorFromActor(AActor* otherActor);
+	UTutorialMonitor* GetTutorialMonitorFromActor_Implementation(AActor* otherActor);
 	
 protected:
 	UPROPERTY(EditAnywhere)
