@@ -6,7 +6,10 @@
 //#include "CoreMinimal.h"
 //#include "UObject/NoExportTypes.h"
 //#include "TutorialMonitor.h"
+#include "StructDefinitionsFile.h"
 #include "BaseTutorialConditions.generated.h"
+
+
 
 
 // Class for tutorial conditions, to be transferred to it's own class file once we have a separate place to hold conditions /////////////////////////
@@ -86,6 +89,12 @@ protected:
 	// Behaviour Specifications
 	UPROPERTY(EditDefaultsOnly)
 	float mWaitTimeBeforeFirstTriggerCheck = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	bool mUseVisualDataOverride = true;
+
+	UPROPERTY(EditAnywhere)
+	FTutorialBasicVisualsData mVisualData;
 
 private:
 	//bool mHasTickCheck

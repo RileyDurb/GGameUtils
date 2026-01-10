@@ -25,6 +25,7 @@ void UTP_WeaponComponent::Fire()
 		return;
 	}
 
+
 	// Try and fire a projectile
 	if (ProjectileClass != nullptr)
 	{
@@ -61,6 +62,8 @@ void UTP_WeaponComponent::Fire()
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
+
+	OnWeaponFired.Broadcast(); // Call on weapon fired event
 }
 
 void UTP_WeaponComponent::AttachWeapon(AGGameUtilsCharacter* TargetCharacter)

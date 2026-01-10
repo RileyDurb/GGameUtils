@@ -54,5 +54,5 @@ public:
 	UDATutorialDefinitions* mTutorialDefinitions;
 
 private:
-	FGameplayTagContainer nActiveTutorials;
+	FGameplayTagContainer mActiveTutorials;
 };

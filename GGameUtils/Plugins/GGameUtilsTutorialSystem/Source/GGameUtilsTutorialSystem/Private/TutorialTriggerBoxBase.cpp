@@ -1,8 +1,9 @@
 // Copyright (c) 2025 Guardbrawl Games
 
-#include "TutorialMonitor.h"
+
 
 #include "TutorialTriggerBoxBase.h"
+#include "TutorialMonitor.h"
 
 void ATutorialTriggerBoxBase::NotifyActorBeginOverlap(AActor* otherActor)
 {

@@ -44,6 +44,16 @@ void UBaseTutorialConditions::TriggerTutorialStart(APlayerController* controller
 
 	mCreatedTutorialWidget = CreateWidget(controllerToUse, mTutorialPopupClass);
 
+	if (mUseVisualDataOverride)
+	{
+		if (mCreatedTutorialWidget->GetClass()->ImplementsInterface(UTutorialPopupInterface::StaticClass()))
+		{
+
+			ITutorialPopupInterface::Execute_ApplyVisualDataOverride(mCreatedTutorialWidget, mVisualData);
+		}
+	}
+
+
 	AddTutorialWidget(controllerToUse, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
 
 	mIsActive = true;

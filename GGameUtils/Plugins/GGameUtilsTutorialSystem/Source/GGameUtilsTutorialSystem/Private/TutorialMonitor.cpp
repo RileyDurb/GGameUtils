@@ -96,7 +96,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				{
 					currTutorial->TriggerTutorialEnd(GetPlayerControllerForTutorial()); // Trigger end sequence
 
-					nActiveTutorials.RemoveTag(tutorialTag); // Tracks that this tutorial is no longer active, so other tutorials can be activated
+					mActiveTutorials.RemoveTag(tutorialTag); // Tracks that this tutorial is no longer active, so other tutorials can be activated
 				}
 				else // Count as completed before it begins
 				{
@@ -111,7 +111,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				|| currTutorial->WasManuallyTriggered()))						    // Or was manually triggered
 				{
 
-					if (nActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
+					if (mActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
 					{
 						continue; // Don't activate, only allow one tutorial at a time for now
 						// NOTE: Probably change this to have a bool on tutorials to enable them to cancel other tutorials, or a bool on tutorials to allow them to be cancelled by others. Can also decice if specific tutorials can cancel others
@@ -127,7 +127,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 					// If reaching here, trigger tutorial
 					currTutorial->TriggerTutorialStart(GetPlayerControllerForTutorial());
 
-					nActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
+					mActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
 				}
 			}
 		}
