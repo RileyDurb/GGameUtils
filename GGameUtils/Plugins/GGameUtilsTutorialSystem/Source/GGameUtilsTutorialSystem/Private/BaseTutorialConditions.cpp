@@ -3,6 +3,7 @@
 
 #include "BaseTutorialConditions.h"
 #include "GameFramework/Pawn.h"
+#include "Kismet/GameplayStatics.h"
 #include "TutorialPopupInterface.h"
 
 
@@ -81,6 +82,14 @@ UWorld* UBaseTutorialConditions::GetWorld() const
 	return GetOuter()->GetWorld(); // Returns parent's world
 }
 
+FTutorialTriggerFunc UBaseTutorialConditions::GetTutorialTriggerDelegate()
+{
+	FTutorialTriggerFunc triggerFunc;
+	triggerFunc.BindUFunction(this, "TrySetManuallyTriggered");
+
+	return triggerFunc;
+}
+
 FTutorialCompleteTriggerFunc UBaseTutorialConditions::GetTutorialCompleteTriggerDelegate()
 {
 	FTutorialCompleteTriggerFunc triggerFunc;
@@ -104,9 +113,19 @@ void UBaseTutorialConditions::SetManuallyCompleted(bool newManuallyCompleted)
 	mWasManuallyCompleted = newManuallyCompleted;
 }
 
+void UBaseTutorialConditions::TrySetManuallyTriggered()
+{
+	// If case not needed here if no more logic is added, but may want to add logic to potentailly stop it from bein manually triggered if we don't want it now
+	if (mWasManuallyTriggered == false)
+	{
+		mWasManuallyTriggered = true;
+	}
+}
+
 // Bindable Version that doesn't take a parameter
 void UBaseTutorialConditions::TrySetManuallyCompleted()
 {
+	// If case not needed here if no more logic is added, but may want to add logic to potentailly stop it from bein manually completed if we don't want it now
 	if (mWasManuallyCompleted == false)
 	{
 		mWasManuallyCompleted = true;

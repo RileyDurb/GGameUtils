@@ -50,6 +50,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "TutorialTriggering")
 	bool TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger);
 
+	UFUNCTION(BlueprintCallable, Category = "TutorialTriggering")
+	FTutorialTriggerFunc GetTriggerTutorialDelegate(FGameplayTag tutorialToTrigger);
+
+
 	UFUNCTION(BlueprintCallable, Category="TutorialEnding")
 	FTutorialCompleteTriggerFunc GetTriggerTutorialCompleteDelegate(FGameplayTag tutorialToEnd);
 

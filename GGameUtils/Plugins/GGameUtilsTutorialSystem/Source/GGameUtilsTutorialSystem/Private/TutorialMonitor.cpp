@@ -193,6 +193,11 @@ bool UTutorialMonitor::TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger)
 	return true;
 }
 
+FTutorialTriggerFunc UTutorialMonitor::GetTriggerTutorialDelegate(FGameplayTag tutorialToTrigger)
+{
+	return mCreatedTutorials[tutorialToTrigger]->GetTutorialTriggerDelegate();
+}
+
 bool UTutorialMonitor::TryQueueTutorialComplete(FGameplayTag tutorialToEnd)
 {
 	if (mCreatedTutorials.Contains(tutorialToEnd) == false)
