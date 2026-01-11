@@ -12,6 +12,7 @@
 
 
 DECLARE_DYNAMIC_DELEGATE(FTutorialCompleteTriggerFunc);
+DECLARE_DYNAMIC_DELEGATE(FTutorialTriggerFunc);
 
 // Class for tutorial conditions, to be transferred to it's own class file once we have a separate place to hold conditions /////////////////////////
 UCLASS(Blueprintable)
@@ -67,6 +68,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersNSetters")
 	float GetInitTimestamp() { return mInitTimestamp; }
 
+	FTutorialTriggerFunc GetTutorialTriggerDelegate();
+
 	FTutorialCompleteTriggerFunc GetTutorialCompleteTriggerDelegate(); // Gets a delegate that manually completes the tutorial when invoked
 
 	void SetCompleted(bool newCompleted); // For manually setting a tutorial to be completed, like completing the condition before it pops up
@@ -74,6 +77,9 @@ public:
 	void SetManuallyTriggered(bool newTriggered);
 
 	void SetManuallyCompleted(bool newManuallyCompleted);
+
+	UFUNCTION()
+	void TrySetManuallyTriggered();
 
 	UFUNCTION()
 	void TrySetManuallyCompleted();
