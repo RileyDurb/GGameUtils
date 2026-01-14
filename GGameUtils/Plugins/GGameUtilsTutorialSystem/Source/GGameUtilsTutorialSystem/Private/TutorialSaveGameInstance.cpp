@@ -1,7 +1,8 @@
 // Copyright (c) 2025 Guardbrawl Games
 
-
 #include "TutorialSaveGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
 
 int UTutorialSaveGameInstance::GetTutorialCanTrigger(FGameplayTag tutorialToCheck)
 {
@@ -33,4 +34,46 @@ void UTutorialSaveGameInstance::MarkTutorialCompletion(FGameplayTag completedTut
 	}
 
 	mTutorialCompletions[completedTutorialTag].numCompletions++;
+}
+
+void UTutorialSaveGameInstance::SaveSaveableTutorialStates()
+{
+	if (mDebugAlwaysResetSave == false) // Don't save if debug save cancelling is on
+	{
+		UTutorialSaveGame* currentSaveGame = Cast<UTutorialSaveGame>(UGameplayStatics::LoadGameFromSlot(mDefaultSaveGameName, mPlatformUserSlot));
+		//mTutorialSaveGame->mSavedTutorialStates = mTutorialCompletions;
+		currentSaveGame->mSavedTutorialStates = mTutorialCompletions;
+		currentSaveGame->testSaveWorking = true;
+
+		// Saves current tutorial states to a file. TODO: make tutorials able to be individully decided whether they should savee, and also make a debug toggle to make nothing save
+		UGameplayStatics::SaveGameToSlot(currentSaveGame, mDefaultSaveGameName, mPlatformUserSlot);
+
+		UE_LOG(LogTemp, Warning, TEXT("Finished"));
+
+	}
+
+}
+
+void UTutorialSaveGameInstance::Initialize(FSubsystemCollectionBase& Collection)
+{
+	// If save game doesn't exist
+	if (UGameplayStatics::DoesSaveGameExist(mDefaultSaveGameName, mPlatformUserSlot) == false || mDebugAlwaysResetSave)
+	{
+		// Create new default save game
+		mTutorialSaveGame = Cast<UTutorialSaveGame>(UGameplayStatics::CreateSaveGameObject(UTutorialSaveGame::StaticClass()));
+	}
+	else // Save game does exist
+	{
+		// Load existing save game file
+		mTutorialSaveGame = Cast<UTutorialSaveGame>(UGameplayStatics::LoadGameFromSlot(mDefaultSaveGameName, mPlatformUserSlot));
+	}
+
+	mTutorialCompletions = mTutorialSaveGame->mSavedTutorialStates;
+
+	UE_LOG(LogTemp, Warning, TEXT("Finished"));
+}
+
+void UTutorialSaveGameInstance::Deinitialize()
+{
+	SaveSaveableTutorialStates();
 }
