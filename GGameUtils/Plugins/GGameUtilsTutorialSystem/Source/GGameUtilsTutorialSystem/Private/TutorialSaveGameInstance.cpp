@@ -10,12 +10,29 @@ int UTutorialSaveGameInstance::GetTutorialCanTrigger(FGameplayTag tutorialToChec
 	if (mTutorialCompletions.Contains(tutorialToCheck) == false)
 	{
 		mTutorialCompletions.Add(tutorialToCheck, FTutorialCompletionInfo()); // Tutorial not tracked yet, add it's info
-
-		return true; // No completions, so let it be triggered
 	}
 
+	if (mSessionOnlyTutorialCompletions.Contains(tutorialToCheck) == false)
+	{
+		mSessionOnlyTutorialCompletions.Add(tutorialToCheck, FTutorialCompletionInfo()); // Tutorial not tracked yet, add it's info
+	}
+
+
 	// If past max number of completions (to start, just test 1 as the max completions)
-	if (mTutorialCompletions[tutorialToCheck].numCompletions > 0)
+
+	int totalTutoralCompletions = 0;
+
+	// If completions only for this session have been tracked, just use those, as that means we don't want to count it's persistent saves
+	if (mSessionOnlyTutorialCompletions[tutorialToCheck].numCompletions > 0)
+	{
+		totalTutoralCompletions = mSessionOnlyTutorialCompletions[tutorialToCheck].numCompletions;
+	}
+	else // Use the tutorials persistently saved completion count
+	{
+		totalTutoralCompletions = mTutorialCompletions[tutorialToCheck].numCompletions;
+	}
+
+	if (totalTutoralCompletions > 0)
 	{
 		return false; // don't allow it to be triggered
 	}
@@ -25,15 +42,24 @@ int UTutorialSaveGameInstance::GetTutorialCanTrigger(FGameplayTag tutorialToChec
 	}
 }
 
-void UTutorialSaveGameInstance::MarkTutorialCompletion(FGameplayTag completedTutorialTag)
+void UTutorialSaveGameInstance::MarkTutorialCompletion(FGameplayTag completedTutorialTag, bool addToFilePersitingSaves)
 {
 	// Lazily add tutorial info for tutorials that haven't been checked for
 	if (mTutorialCompletions.Contains(completedTutorialTag) == false)
 	{
 		mTutorialCompletions.Add(completedTutorialTag, FTutorialCompletionInfo()); // Tutorial not tracked yet, add it's info
+		mSessionOnlyTutorialCompletions.Add(completedTutorialTag, FTutorialCompletionInfo()); // Tutorial not tracked yet, add it's info
 	}
 
-	mTutorialCompletions[completedTutorialTag].numCompletions++;
+
+	if (addToFilePersitingSaves)
+	{
+		mTutorialCompletions[completedTutorialTag].numCompletions++;
+	}
+	else
+	{
+		mSessionOnlyTutorialCompletions[completedTutorialTag].numCompletions++;
+	}
 }
 
 void UTutorialSaveGameInstance::SaveSaveableTutorialStates()
@@ -52,6 +78,16 @@ void UTutorialSaveGameInstance::SaveSaveableTutorialStates()
 
 	}
 
+}
+
+void UTutorialSaveGameInstance::ResetTutorialSaveStatesAndSave()
+{
+	for (auto it = mTutorialCompletions.begin(); it != mTutorialCompletions.end(); ++it)
+	{
+		it->Value.numCompletions = 0;
+	}
+
+	SaveSaveableTutorialStates();
 }
 
 void UTutorialSaveGameInstance::Initialize(FSubsystemCollectionBase& Collection)
