@@ -24,10 +24,13 @@ public:
 	int GetTutorialCanTrigger(FGameplayTag tutorialToCheck);
 
 	UFUNCTION(BlueprintCallable, Category="Tutorial Completion Tracking")
-	void MarkTutorialCompletion(FGameplayTag completedTutorialTag);
+	void MarkTutorialCompletion(FGameplayTag completedTutorialTag, bool addToFilePersitingSaves);
 
 	UFUNCTION(BlueprintCallable, Category="Saving")
 	void SaveSaveableTutorialStates();
+
+	UFUNCTION(BlueprintCallable, Category = "Saving")
+	void ResetTutorialSaveStatesAndSave();
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -44,7 +47,7 @@ protected:
 
 	// Probably should make this a configuration file, but by default, disables saving in the editor so you can keep testing tutorials, and enables saving in builds
 #if WITH_EDITOR
-	bool mDebugAlwaysResetSave = true;
+	bool mDebugAlwaysResetSave = false;
 #else
 	bool mDebugAlwaysResetSave = false;
 #endif
@@ -52,8 +55,8 @@ protected:
 
 
 private:
-
 	TMap<FGameplayTag, FTutorialCompletionInfo> mTutorialCompletions;
+	TMap<FGameplayTag, FTutorialCompletionInfo> mSessionOnlyTutorialCompletions;
 
 	UTutorialSaveGame* mTutorialSaveGame;
 };

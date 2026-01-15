@@ -35,11 +35,16 @@ void UTutorialMonitor::BeginPlay()
 
 			mCreatedTutorials[it->Key]->SetInitTimestamp(mInitTimestamp);
 
-			// Check for if tutorial has already been completed from the tutorial saves, and mark as complete if it is so it doesn't trigger
-			UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
-			if (tutorialSaves->GetTutorialCanTrigger(it->Key) == false)
+			// If tutorial is set to save between sessions, or for the whole session
+			ETutorialCompletionSaveType saveType = mCreatedTutorials[it->Key]->GetCompletionSaveType();
+			if (saveType == ETutorialCompletionSaveType::SaveBetweenSessions || saveType == ETutorialCompletionSaveType::SaveOnlyForSession)
 			{
-				mCreatedTutorials[it->Key]->SetCompleted(true);
+				// Check for if tutorial has already been completed from the tutorial saves, and mark as complete if it is so it doesn't trigger
+				UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+				if (tutorialSaves->GetTutorialCanTrigger(it->Key) == false)
+				{
+					mCreatedTutorials[it->Key]->SetCompleted(true);
+				}
 			}
 		}
 	}
@@ -95,7 +100,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				tutorialDone = currTutorial->CheckTutorialComplete(owningPawn); // Check if tutorial is complete now
 			}
 
-			// Apply manual completion if that's been triggered
+			// Account for manual completion if that's been triggered
 			if (currTutorial->WasManuallyCompleted())
 			{
 				tutorialDone = true;
@@ -117,15 +122,43 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 					currTutorial->SetCompleted(true);
 				}
 
-				// Marks tutorial completion in the game instance subsystem for saving them. NOTE: Currently doesn not save this to a save game, plan is to add that
-				UTutorialSaveGameInstance* tutorialSaves = GetWorld()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
-				tutorialSaves->MarkTutorialCompletion(tutorialTag);
+				// Handles saving based on it's completion type
+				switch (currTutorial->GetCompletionSaveType())
+				{
+					case ETutorialCompletionSaveType::SaveOnlyForSession:
+					{
+						// Marks tutorial completion in the game instance subsystem only for this session
+						UTutorialSaveGameInstance* tutorialSaves = GetWorld()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+						tutorialSaves->MarkTutorialCompletion(tutorialTag, false);
+						break;
+					}
+
+					case ETutorialCompletionSaveType::SaveBetweenSessions:
+					{
+						// Marks tutorial completion in the game instance subsystem only for this session
+						UTutorialSaveGameInstance* tutorialSaves = GetWorld()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+						tutorialSaves->MarkTutorialCompletion(tutorialTag, true);
+						break;
+					}
+					case ETutorialCompletionSaveType::SaveForMonitorLifetime:
+					{
+						// Don't do anything, and this keeps it set to completed, until then tutorial monitor resets.
+						// Keep in mind this means the tutorials reset every time the player resets if attached to the player, but not if on the player controller 
+						break;
+					}
+					case ETutorialCompletionSaveType::DontSaveAndResetToReady:
+					{
+						// reset completion status so it can trigger again
+						currTutorial->ResetCompletionStatusToReady();
+						break;
+					}
+				}
 			}
 			else // If not complete, check if tutorial should start, and start it if so
 			{
 				if (currTutorial->IsActive() == false								// if not already active
 				&& 
-				(currTutorial->CheckTutorialShouldActivate(owningPawn) == true   // If activation condition is met
+				(currTutorial->CheckTutorialShouldActivate(owningPawn) == true      // If activation condition is met
 				|| currTutorial->WasManuallyTriggered()))						    // Or was manually triggered
 				{
 					// Check for if tutorial has already been completed from the tutorial saves, and skip + mark as complete if it is

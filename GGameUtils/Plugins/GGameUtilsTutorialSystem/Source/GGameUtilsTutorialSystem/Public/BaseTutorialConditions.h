@@ -9,6 +9,14 @@
 #include "StructDefinitionsFile.h"
 #include "BaseTutorialConditions.generated.h"
 
+UENUM(BlueprintType)
+enum class ETutorialCompletionSaveType : uint8
+{
+	SaveOnlyForSession,
+	SaveBetweenSessions,
+	SaveForMonitorLifetime,
+	DontSaveAndResetToReady
+};
 
 
 DECLARE_DYNAMIC_DELEGATE(FTutorialCompleteTriggerFunc);
@@ -68,6 +76,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersNSetters")
 	float GetInitTimestamp() { return mInitTimestamp; }
 
+	ETutorialCompletionSaveType GetCompletionSaveType() { return mSaveType; }
+
 	FTutorialTriggerFunc GetTutorialTriggerDelegate();
 
 	FTutorialCompleteTriggerFunc GetTutorialCompleteTriggerDelegate(); // Gets a delegate that manually completes the tutorial when invoked
@@ -78,13 +88,21 @@ public:
 
 	void SetManuallyCompleted(bool newManuallyCompleted);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void TrySetManuallyTriggered();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void TrySetManuallyCompleted();
 
 	void SetInitTimestamp(float timestamp);
+
+	/*
+	For resetting the completion status
+	Likely only needed for the automatic reset in the tutorial manager, which happens when the tutorial is completed, if the save type is set to don't save
+	*/
+	UFUNCTION(BlueprintCallable)
+	void ResetCompletionStatusToReady();
+
 
 	// Blueprint editable variables ///////////////////////////////////////////////////////
 
@@ -111,6 +129,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FTutorialBasicVisualsData mVisualData;
+
+	UPROPERTY(EditAnywhere)
+	ETutorialCompletionSaveType mSaveType = ETutorialCompletionSaveType::SaveOnlyForSession;
 
 
 private:

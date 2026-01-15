@@ -137,6 +137,17 @@ void UBaseTutorialConditions::SetInitTimestamp(float timestamp)
 	mInitTimestamp = timestamp;
 }
 
+void UBaseTutorialConditions::ResetCompletionStatusToReady()
+{
+	// Reset all state variables, so that it can be triggered again just like when it was first initialized
+	mIsActive = false;
+	mIsCurrentlyCompleted = false;
+	mWasManuallyTriggered = false;
+	mWasManuallyCompleted = false;
+
+	mInitTimestamp = GetWorld()->GetRealTimeSeconds(); // Reset init timestamp to now
+}
+
 void UBaseTutorialConditions::TriggerTutorialEnd(APlayerController* controllerContext)
 {
 
