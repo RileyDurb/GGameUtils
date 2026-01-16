@@ -189,6 +189,14 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 					mActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
 				}
+				else if (currTutorial->IsActive())
+				{
+					// Checks if tutorial should auto end
+					if (currTutorial->ShouldAutoEnd())
+					{
+						TryQueueTutorialComplete(tutorialTag); // Trigger tutorial end the same way it would be done when manually triggering completion
+					}
+				}
 			}
 		}
 	}

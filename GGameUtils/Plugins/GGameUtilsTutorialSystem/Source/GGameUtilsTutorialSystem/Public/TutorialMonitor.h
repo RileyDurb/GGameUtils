@@ -43,7 +43,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Turn these into peices of a base tutorial definition object
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="TutorialContextOverride")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category="TutorialContextOverride")
 	APlayerController* GetPlayerControllerForTutorial();
 	APlayerController* GetPlayerControllerForTutorial_Implementation();
 

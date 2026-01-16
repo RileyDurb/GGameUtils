@@ -4,6 +4,7 @@
 #include "BaseTutorialConditions.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "TutorialMonitor.h"
 #include "TutorialPopupInterface.h"
 
 
@@ -39,6 +40,15 @@
 //	widgetPopup->AddToViewport();
 //}
 
+// Private helper functions ////////////////////////////////////////////////////////////////////////////////////////
+
+APawn* GetTutorialPlayerFromOuter(UBaseTutorialConditions* tutorialToUse)
+{
+	return Cast<UTutorialMonitor>(tutorialToUse->GetOuter())->GetPlayerControllerForTutorial()->GetPawn();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Class functions /////////////////////////////////////////////////////////////////////////////////////////////////
 
 void UBaseTutorialConditions::TriggerTutorialStart(APlayerController* controllerToUse)
 {
@@ -58,6 +68,8 @@ void UBaseTutorialConditions::TriggerTutorialStart(APlayerController* controller
 	AddTutorialWidget(controllerToUse, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
 
 	mIsActive = true;
+
+	mTriggeredTimestamp = GetWorld()->GetRealTimeSeconds();
 }
 
 void UBaseTutorialConditions::AddTutorialWidget_Implementation(APlayerController* controlerUsed, UUserWidget* widgetPopup)
@@ -77,9 +89,38 @@ bool UBaseTutorialConditions::CheckTutorialShouldActivate_Implementation(APawn* 
 	return false;
 }
 
+APawn* UBaseTutorialConditions::GetPawnFromParent()
+{
+	return GetTutorialPlayerFromOuter(this);
+}
+
 UWorld* UBaseTutorialConditions::GetWorld() const
 {
 	return GetOuter()->GetWorld(); // Returns parent's world
+}
+
+bool UBaseTutorialConditions::ImplementsGetWorld() const
+{
+	return true;
+}
+
+bool UBaseTutorialConditions::ShouldAutoEnd() const
+{
+	// Only auto end with positive wait time values. negative or 0 counts as never auto ending
+	if (mAutoEndWaitTime <= 0.0f)
+	{
+		return false;
+	}
+
+	// If auto wait time is up
+	if (GetWorld()->GetRealTimeSeconds() - mTriggeredTimestamp > mAutoEndWaitTime)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 FTutorialTriggerFunc UBaseTutorialConditions::GetTutorialTriggerDelegate()
@@ -174,3 +215,4 @@ void UBaseTutorialConditions::OnTriggerTutorialEnd_Implementation(APlayerControl
 		mCreatedTutorialWidget->RemoveFromParent(); // Just remove from parent. If making this work on more than just widgets, then remove this part, or find a way to make this the base case
 	}
 }
+

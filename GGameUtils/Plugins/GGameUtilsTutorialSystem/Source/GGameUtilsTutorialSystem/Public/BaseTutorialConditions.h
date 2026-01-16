@@ -55,28 +55,37 @@ public:
 	bool CheckTutorialShouldActivate(APawn* pawnContextToUse);
 	virtual bool CheckTutorialShouldActivate_Implementation(APawn* pawnContextToUse);
 
-	// Parent Overriden functions
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="GettersAndSetters")
+	APawn* GetPawnFromParent(); // Gets pawn from parent tutorial monitor
+	// Parent Overriden functions /////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable)
 	UWorld* GetWorld() const override;
 
+	bool ImplementsGetWorld() const override;
+
 	// Getters and setters ////////////////////////////////////////////////////////////////
 	
-	bool IsActive() { return mIsActive; }
+	bool IsActive() const { return mIsActive; }
 
-	bool IsCompleted() { return mIsCurrentlyCompleted; }
+	bool IsCompleted() const { return mIsCurrentlyCompleted; }
 
-	bool CancelIfConpletedBeforeTrigger() { return mCancelIfCompletedBeforeTrigger; }
+	bool CancelIfConpletedBeforeTrigger() const { return mCancelIfCompletedBeforeTrigger; }
 
-	float FirstTriggerCheckWaitTime() { return mWaitTimeBeforeFirstTriggerCheck; }
+	float FirstTriggerCheckWaitTime() const { return mWaitTimeBeforeFirstTriggerCheck; }
 
-	bool WasManuallyTriggered() { return mWasManuallyTriggered; }
+	bool WasManuallyTriggered() const { return mWasManuallyTriggered; }
 
-	bool WasManuallyCompleted() { return mWasManuallyCompleted; }
+	bool WasManuallyCompleted() const { return mWasManuallyCompleted; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersNSetters")
-	float GetInitTimestamp() { return mInitTimestamp; }
+	float GetInitTimestamp() const { return mInitTimestamp; } // Gets real timestamp when tutorial was first set active, either when it was first constructed, or after being completed, if it is set to restart.
 
-	ETutorialCompletionSaveType GetCompletionSaveType() { return mSaveType; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersNSetters")
+	float GetTriggeredTimestamp() const { return mTriggeredTimestamp; } // Gets real timestamp when tutorial was triggered
+
+	bool ShouldAutoEnd() const;
+
+	ETutorialCompletionSaveType GetCompletionSaveType() const { return mSaveType; }
 
 	FTutorialTriggerFunc GetTutorialTriggerDelegate();
 
@@ -103,7 +112,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetCompletionStatusToReady();
 
-
 	// Blueprint editable variables ///////////////////////////////////////////////////////
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -124,6 +132,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float mWaitTimeBeforeFirstTriggerCheck = 0.0f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float mAutoEndWaitTime = -1.0f; // Time after triggering, when the tutorial will auto end. A 0 or negative value will make it not auto end
+
 	UPROPERTY(EditAnywhere)
 	bool mUseVisualDataOverride = true;
 
@@ -137,6 +148,8 @@ protected:
 private:
 	//bool mHasTickCheck
 
+	// Private variables
+
 	bool mIsActive = false;
 
 	bool mIsCurrentlyCompleted = false;
@@ -146,5 +159,8 @@ private:
 	bool mWasManuallyCompleted = false;
 
 	float mInitTimestamp = 0.0f;
+
+	float mTriggeredTimestamp = 0.0f;
+
 
 };
