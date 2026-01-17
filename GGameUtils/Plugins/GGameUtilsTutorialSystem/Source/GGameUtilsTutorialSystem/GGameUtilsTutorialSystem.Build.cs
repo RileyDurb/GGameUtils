@@ -34,12 +34,14 @@ public class GGameUtilsTutorialSystem : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject",
-				"Engine",
+                "CoreUObject",
+                "Engine",
 				"Slate",
 				"SlateCore",
 				"UMG",
-				"GameplayTags"
+				"GameplayTags",
+				"UnrealEd", // PerProjectUserSettings class
+				"DeveloperSettings",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -2,6 +2,7 @@
 
 #include "TutorialSaveGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "TutorialPerUserSettings.h"
 
 
 int UTutorialSaveGameInstance::GetTutorialCanTrigger(FGameplayTag tutorialToCheck)
@@ -18,7 +19,7 @@ int UTutorialSaveGameInstance::GetTutorialCanTrigger(FGameplayTag tutorialToChec
 	}
 
 
-	// If past max number of completions (to start, just test 1 as the max completions)
+	// Check if past max number of completions, and return result (to start, just test 1 as the max completions)
 
 	int totalTutoralCompletions = 0;
 
@@ -92,6 +93,12 @@ void UTutorialSaveGameInstance::ResetTutorialSaveStatesAndSave()
 
 void UTutorialSaveGameInstance::Initialize(FSubsystemCollectionBase& Collection)
 {
+	// If in the editor, apply the per user setting to turn of/ on tutorial saving between sessions
+#if WITH_EDITOR
+	mDebugAlwaysResetSave = UTutorialPerUserSettings::Get()->IgnorePersistentTutorialSavesInEditor;
+#endif
+
+
 	// If save game doesn't exist
 	if (UGameplayStatics::DoesSaveGameExist(mDefaultSaveGameName, mPlatformUserSlot) == false || mDebugAlwaysResetSave)
 	{
