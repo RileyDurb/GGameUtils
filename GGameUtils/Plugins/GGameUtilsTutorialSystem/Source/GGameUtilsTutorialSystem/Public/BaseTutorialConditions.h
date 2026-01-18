@@ -22,7 +22,7 @@ enum class ETutorialCompletionSaveType : uint8
 DECLARE_DYNAMIC_DELEGATE(FTutorialCompleteTriggerFunc);
 DECLARE_DYNAMIC_DELEGATE(FTutorialTriggerFunc);
 
-// Class for tutorial conditions, to be transferred to it's own class file once we have a separate place to hold conditions /////////////////////////
+// Class for tutorial conditions as well as tutorial data /////////////////////////
 UCLASS(Blueprintable)
 class GGAMEUTILSTUTORIALSYSTEM_API UBaseTutorialConditions : public UObject
 {
@@ -75,7 +75,7 @@ public:
 
 	bool CancelIfConpletedBeforeTrigger() const { return mCancelIfCompletedBeforeTrigger; }
 
-	float FirstTriggerCheckWaitTime() const { return mWaitTimeBeforeFirstTriggerCheck; }
+	float CurrentTriggerCheckWaitTime() const;
 
 	bool WasManuallyTriggered() const { return mWasManuallyTriggered; }
 
@@ -87,6 +87,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersNSetters")
 	float GetTriggeredTimestamp() const { return mTriggeredTimestamp; } // Gets real timestamp when tutorial was triggered
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
+	int GetMaxSavedCompletions() const { return mMaxSavedTutorialCompletions; }
+
 	bool ShouldAutoEnd() const;
 
 	ETutorialCompletionSaveType GetCompletionSaveType() const { return mSaveType; }
@@ -94,6 +97,8 @@ public:
 	FTutorialTriggerFunc GetTutorialTriggerDelegate();
 
 	FTutorialCompleteTriggerFunc GetTutorialCompleteTriggerDelegate(); // Gets a delegate that manually completes the tutorial when invoked
+
+
 
 	void SetCompleted(bool newCompleted); // For manually setting a tutorial to be completed, like completing the condition before it pops up
 
@@ -129,12 +134,19 @@ public:
 
 protected:
 	// Behaviour Specifications
+
 	UPROPERTY(EditDefaultsOnly)
 	bool mCancelIfCompletedBeforeTrigger = true;
+
+	UPROPERTY(EditAnywhere)
+	int mMaxSavedTutorialCompletions = 1; // While it will only trigger again right away if save type is set to restart, this lets you set a higher number of tutorial completions that can happen before it won't trigger again.
 
 	// Behaviour Specifications
 	UPROPERTY(EditDefaultsOnly)
 	float mWaitTimeBeforeFirstTriggerCheck = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float mWaitTimeBeforeTriggerCheckAfterRestart = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float mAutoEndWaitTime = -1.0f; // Time after triggering, when the tutorial will auto end. A 0 or negative value will make it not auto end
@@ -165,6 +177,8 @@ private:
 	float mInitTimestamp = 0.0f;
 
 	float mTriggeredTimestamp = 0.0f;
+
+	bool mHasBeenRestarted = false;
 
 
 };

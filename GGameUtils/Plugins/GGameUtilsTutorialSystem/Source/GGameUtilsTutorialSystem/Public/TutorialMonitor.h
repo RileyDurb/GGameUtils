@@ -17,7 +17,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+// Class responsible for updating tutorials, holding allocated ones, and managing their state
 UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class GGAMEUTILSTUTORIALSYSTEM_API UTutorialMonitor : public UActorComponent
 {
@@ -66,5 +66,10 @@ public:
 	UDATutorialDefinitions* mTutorialDefinitions;
 
 private:
+	// Helper functions
+	bool CanTriggerTutorial(FGameplayTag tutorialTag);
+
+	// Private variables
+
 	FGameplayTagContainer mActiveTutorials;
 };

@@ -109,6 +109,18 @@ bool UBaseTutorialConditions::ImplementsGetWorld() const
 	return true;
 }
 
+float UBaseTutorialConditions::CurrentTriggerCheckWaitTime() const
+{
+	if (mHasBeenRestarted)
+	{
+		return mWaitTimeBeforeTriggerCheckAfterRestart;
+	}
+	else
+	{
+		return mWaitTimeBeforeFirstTriggerCheck;
+	}
+}
+
 bool UBaseTutorialConditions::ShouldAutoEnd() const
 {
 	// Only auto end with positive wait time values. negative or 0 counts as never auto ending
@@ -194,6 +206,8 @@ void UBaseTutorialConditions::ResetCompletionStatusToReady()
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds(); // Reset init timestamp to now
 
 	ResetCustomVariables(); // Calls overridable reset variables function, to let the derived tutorial reset any variables it may have created that need it
+
+	mHasBeenRestarted = true;
 }
 
 void UBaseTutorialConditions::TriggerTutorialEnd(APlayerController* controllerContext)

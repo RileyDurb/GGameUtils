@@ -10,7 +10,7 @@
 #include "TutorialSaveGameInstance.generated.h"
 
 /**
- * 
+ * Class responsible for saving/ allowing access to the tutorial save data
  */
 
 
@@ -21,7 +21,7 @@ class GGAMEUTILSTUTORIALSYSTEM_API UTutorialSaveGameInstance : public UGameInsta
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Tutorial Completion Tracking")
-	int GetTutorialCanTrigger(FGameplayTag tutorialToCheck);
+	int GetNumTutorialCompletions(FGameplayTag tutorialToCheck);
 
 	UFUNCTION(BlueprintCallable, Category="Tutorial Completion Tracking")
 	void MarkTutorialCompletion(FGameplayTag completedTutorialTag, bool addToFilePersitingSaves);
