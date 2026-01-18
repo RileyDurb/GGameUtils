@@ -5,7 +5,7 @@
 #include "TutorialPerUserSettings.h"
 
 
-int UTutorialSaveGameInstance::GetTutorialCanTrigger(FGameplayTag tutorialToCheck)
+int UTutorialSaveGameInstance::GetNumTutorialCompletions(FGameplayTag tutorialToCheck)
 {
 	// Lazily add tutorial info for tutorials that haven't been checked for
 	if (mTutorialCompletions.Contains(tutorialToCheck) == false)
@@ -33,14 +33,7 @@ int UTutorialSaveGameInstance::GetTutorialCanTrigger(FGameplayTag tutorialToChec
 		totalTutoralCompletions = mTutorialCompletions[tutorialToCheck].numCompletions;
 	}
 
-	if (totalTutoralCompletions > 0)
-	{
-		return false; // don't allow it to be triggered
-	}
-	else
-	{
-		return true; // Allow it to be triggered
-	}
+	return totalTutoralCompletions;
 }
 
 void UTutorialSaveGameInstance::MarkTutorialCompletion(FGameplayTag completedTutorialTag, bool addToFilePersitingSaves)

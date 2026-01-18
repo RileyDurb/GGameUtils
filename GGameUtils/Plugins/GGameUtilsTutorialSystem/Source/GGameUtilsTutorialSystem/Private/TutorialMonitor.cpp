@@ -41,7 +41,7 @@ void UTutorialMonitor::BeginPlay()
 			{
 				// Check for if tutorial has already been completed from the tutorial saves, and mark as complete if it is so it doesn't trigger
 				UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
-				if (tutorialSaves->GetTutorialCanTrigger(it->Key) == false)
+				if (CanTriggerTutorial(it->Key) == false)
 				{
 					mCreatedTutorials[it->Key]->SetCompleted(true);
 				}
@@ -162,8 +162,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				|| currTutorial->WasManuallyTriggered()))						    // Or was manually triggered
 				{
 					// Check for if tutorial has already been completed from the tutorial saves, and skip + mark as complete if it is
-					UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
-					if (tutorialSaves->GetTutorialCanTrigger(tutorialTag) == false)
+					if (CanTriggerTutorial(tutorialTag) == false)
 					{
 						currTutorial->SetCompleted(true);
 
@@ -190,7 +189,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 
 					// If there is wait time left before we should trigger tutorial
-					if (GetWorld()->GetRealTimeSeconds() - mInitTimestamp <= currTutorial->FirstTriggerCheckWaitTime())
+					if (GetWorld()->GetRealTimeSeconds() - currTutorial->GetInitTimestamp() <= currTutorial->CurrentTriggerCheckWaitTime())
 					{
 						continue; // Skip this for now, wait until time has elapsed
 					}
@@ -268,6 +267,22 @@ bool UTutorialMonitor::TryQueueTutorialComplete(FGameplayTag tutorialToEnd)
 	mCreatedTutorials[tutorialToEnd]->SetManuallyCompleted(true);
 
 	return false;
+}
+
+bool UTutorialMonitor::CanTriggerTutorial(FGameplayTag tutorialTag)
+{
+	if (mCreatedTutorials.Contains(tutorialTag) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:CanTriggerTutorial :tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialTag.GetTagName());
+		return false;
+	}
+
+	// Checks if number of saved completions is at the max, or more can be done
+	UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+
+	int currentCompletionCount = tutorialSaves->GetNumTutorialCompletions(tutorialTag);
+
+	return currentCompletionCount < mCreatedTutorials[tutorialTag]->GetMaxSavedCompletions();
 }
 
 FTutorialCompleteTriggerFunc UTutorialMonitor::GetTriggerTutorialCompleteDelegate(FGameplayTag tutorialToEnd)
