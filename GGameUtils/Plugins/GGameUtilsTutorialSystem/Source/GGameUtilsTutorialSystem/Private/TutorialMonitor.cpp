@@ -146,12 +146,18 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 						// Keep in mind this means the tutorials reset every time the player resets if attached to the player, but not if on the player controller 
 						break;
 					}
-					case ETutorialCompletionSaveType::DontSaveAndResetToReady:
+					case ETutorialCompletionSaveType::DontSave:
 					{
-						// reset completion status so it can trigger again
-						currTutorial->ResetCompletionStatusToReady();
+						// Don't save (:
 						break;
 					}
+				}
+
+				// Handles resetting if tutorial is set to
+				if (currTutorial->ShouldResetOnceComplete())
+				{
+					// reset completion status so it can trigger again
+					currTutorial->ResetCompletionStatusToReady();
 				}
 			}
 			else // If not complete, check if tutorial should start, and start it if so
