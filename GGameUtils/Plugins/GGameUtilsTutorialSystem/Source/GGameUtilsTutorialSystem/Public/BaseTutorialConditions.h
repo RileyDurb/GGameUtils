@@ -15,7 +15,7 @@ enum class ETutorialCompletionSaveType : uint8
 	SaveOnlyForSession,
 	SaveBetweenSessions,
 	SaveForMonitorLifetime,
-	DontSaveAndResetToReady
+	DontSave
 };
 
 
@@ -81,16 +81,19 @@ public:
 
 	bool WasManuallyCompleted() const { return mWasManuallyCompleted; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersNSetters")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersAndSetters")
 	float GetInitTimestamp() const { return mInitTimestamp; } // Gets real timestamp when tutorial was first set active, either when it was first constructed, or after being completed, if it is set to restart.
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersNSetters")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
 	float GetTriggeredTimestamp() const { return mTriggeredTimestamp; } // Gets real timestamp when tutorial was triggered
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
 	int GetMaxSavedCompletions() const { return mMaxSavedTutorialCompletions; }
 
 	bool ShouldAutoEnd() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
+	bool ShouldResetOnceComplete() const { return mResetToReadyAfterCompleting; }
 
 	ETutorialCompletionSaveType GetCompletionSaveType() const { return mSaveType; }
 
@@ -123,7 +126,8 @@ public:
 
 	// Blueprint editable variables ///////////////////////////////////////////////////////
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// Widget class to spawn for the tutorial. If using your own widget, implement the TutorialPopupInterface and its functions so it can be controlled by the tutorial
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visuals")
 	TSubclassOf<UUserWidget> mTutorialPopupClass; // Widget class to use for the tutorial popup
 
 
@@ -133,31 +137,38 @@ public:
 
 
 protected:
-	// Behaviour Specifications
 
-	UPROPERTY(EditDefaultsOnly)
+	// If enabled, will check the completion condition before tutorial is triggered, allowing the tutorial not to be shown if completed before it's triggered
+	UPROPERTY(EditDefaultsOnly, Category = "Completion Behaviour")
 	bool mCancelIfCompletedBeforeTrigger = true;
 
-	UPROPERTY(EditAnywhere)
-	int mMaxSavedTutorialCompletions = 1; // While it will only trigger again right away if save type is set to restart, this lets you set a higher number of tutorial completions that can happen before it won't trigger again.
+	// How many tutorial completions that can happen before it won't be able trigger again (within the scope of its save type)
+	UPROPERTY(EditAnywhere, Category = "Completion Behaviour")
+	int mMaxSavedTutorialCompletions = 1; 
 
-	// Behaviour Specifications
-	UPROPERTY(EditDefaultsOnly)
+	// After tutorial completion, should the existing tutorial reset and allow itself to possibly be triggered again during this lifetime of the tutorial monitor
+	UPROPERTY(EditAnywhere, Category="Completion Behaviour")
+	bool mResetToReadyAfterCompleting = false; 
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Triggering Behaviour")
 	float mWaitTimeBeforeFirstTriggerCheck = 0.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Triggering Behaviour")
 	float mWaitTimeBeforeTriggerCheckAfterRestart = 0.0f;
 
-	UPROPERTY(EditDefaultsOnly)
-	float mAutoEndWaitTime = -1.0f; // Time after triggering, when the tutorial will auto end. A 0 or negative value will make it not auto end
+	// Time after triggering when the tutorial will auto end. A 0 or negative value will make it not auto end, and only end when its condition is met, is manually completed, or cancelled by another tutorial
+	UPROPERTY(EditDefaultsOnly, Category = "Completion Behaviour")
+	float mAutoEndWaitTime = -1.0f; 
 
-	UPROPERTY(EditAnywhere)
+	// If true, overrides the below information on the tutorial widget through the ITutorialPopupInterface. Enables using the same widget for multiple tutorials
+	UPROPERTY(EditAnywhere, Category = "Visuals")
 	bool mUseVisualDataOverride = true;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Visuals")
 	FTutorialBasicVisualsData mVisualData;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Saving Behaviour")
 	ETutorialCompletionSaveType mSaveType = ETutorialCompletionSaveType::SaveOnlyForSession;
 
 
