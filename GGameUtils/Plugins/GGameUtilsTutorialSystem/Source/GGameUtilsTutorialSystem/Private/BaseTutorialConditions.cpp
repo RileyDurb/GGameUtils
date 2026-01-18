@@ -89,6 +89,11 @@ bool UBaseTutorialConditions::CheckTutorialShouldActivate_Implementation(APawn* 
 	return false;
 }
 
+void UBaseTutorialConditions::ResetCustomVariables_Implementation()
+{
+	// Does nothing by default, base variables already reset as a part of the code that calls this function
+}
+
 APawn* UBaseTutorialConditions::GetPawnFromParent()
 {
 	return GetTutorialPlayerFromOuter(this);
@@ -187,6 +192,8 @@ void UBaseTutorialConditions::ResetCompletionStatusToReady()
 	mWasManuallyCompleted = false;
 
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds(); // Reset init timestamp to now
+
+	ResetCustomVariables(); // Calls overridable reset variables function, to let the derived tutorial reset any variables it may have created that need it
 }
 
 void UBaseTutorialConditions::TriggerTutorialEnd(APlayerController* controllerContext)

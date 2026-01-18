@@ -55,6 +55,10 @@ public:
 	bool CheckTutorialShouldActivate(APawn* pawnContextToUse);
 	virtual bool CheckTutorialShouldActivate_Implementation(APawn* pawnContextToUse);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable,  Category = "BehaviourOverrides", meta=(ForceAsFunction))
+	void ResetCustomVariables();
+	virtual void ResetCustomVariables_Implementation();
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="GettersAndSetters")
 	APawn* GetPawnFromParent(); // Gets pawn from parent tutorial monitor
 	// Parent Overriden functions /////////////////////////////////////////////////////////
