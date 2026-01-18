@@ -17,4 +17,8 @@ class GGAMEUTILSTUTORIALSYSTEM_API UDATutorialDefinitions : public UDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FGameplayTag, TSubclassOf<UBaseTutorialConditions>> mTutorials;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FGameplayTag, FGameplayTagContainer> mTutorialsCanCancelWhichTutorials;
+
 };
