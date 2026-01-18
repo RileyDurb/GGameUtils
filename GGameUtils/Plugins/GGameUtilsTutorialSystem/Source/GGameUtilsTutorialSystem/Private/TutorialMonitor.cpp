@@ -170,10 +170,22 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 						continue; // Tutorial is done, skip it, and it won't trigger again since we set it to complete
 					}
 
-					if (mActiveTutorials.IsEmpty() == false) // If there is a currently active tutorial
+					// If there is a currently active tutorial, only allow trigger if it can cancel the current one
+					if (mActiveTutorials.IsEmpty() == false)
 					{
-						continue; // Don't activate, only allow one tutorial at a time for now
-						// NOTE: Probably change this to have a bool on tutorials to enable them to cancel other tutorials, or a bool on tutorials to allow them to be cancelled by others. Can also decice if specific tutorials can cancel others
+						bool canCancelCurrentTutorial = false;
+						if (mTutorialDefinitions->mTutorialsCanCancelWhichTutorials.Contains(tutorialTag)) // If there are some tutorials this tutorial can cancel
+						{
+							if (mTutorialDefinitions->mTutorialsCanCancelWhichTutorials[tutorialTag].HasTag(mActiveTutorials.Last())) // If this tutorial can cancel the active one
+							{
+								canCancelCurrentTutorial = TryQueueTutorialComplete(mActiveTutorials.Last()); // Tries cancelling current tutorial, and saves result
+							}
+						}
+
+						if (canCancelCurrentTutorial == false)
+						{
+							continue; // Don't activate, only allow one tutorial at a time for now
+						}
 					}
 
 
