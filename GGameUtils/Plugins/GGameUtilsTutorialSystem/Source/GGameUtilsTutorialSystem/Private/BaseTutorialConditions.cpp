@@ -81,7 +81,7 @@ void UBaseTutorialConditions::AddTutorialWidget_Implementation(APlayerController
 }
 bool UBaseTutorialConditions::CheckTutorialComplete_Implementation(APawn* pawnContextToUse)
 {
-	return true;
+	return false;
 }
 
 bool UBaseTutorialConditions::CheckTutorialShouldActivate_Implementation(APawn* pawnContextToUse)
