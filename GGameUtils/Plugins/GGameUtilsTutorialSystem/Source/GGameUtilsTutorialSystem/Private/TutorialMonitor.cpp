@@ -253,6 +253,13 @@ bool UTutorialMonitor::TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger)
 
 FTutorialTriggerFunc UTutorialMonitor::GetTriggerTutorialDelegate(FGameplayTag tutorialToTrigger)
 {
+	if (mCreatedTutorials.Contains(tutorialToTrigger) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetTriggerTutorialDelegate: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToTrigger.GetTagName());
+		return FTutorialTriggerFunc();
+	}
+
+
 	return mCreatedTutorials[tutorialToTrigger]->GetTutorialTriggerDelegate();
 }
 
@@ -293,6 +300,13 @@ bool UTutorialMonitor::CanTriggerTutorial(FGameplayTag tutorialTag)
 
 FTutorialCompleteTriggerFunc UTutorialMonitor::GetTriggerTutorialCompleteDelegate(FGameplayTag tutorialToEnd)
 {
+	if (mCreatedTutorials.Contains(tutorialToEnd) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetTriggerTutorialCompleteDelegate: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToEnd.GetTagName());
+		return FTutorialCompleteTriggerFunc();
+	}
+
+
 	return mCreatedTutorials[tutorialToEnd]->GetTutorialCompleteTriggerDelegate();
 }
 
