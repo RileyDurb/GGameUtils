@@ -15,7 +15,7 @@ class GGAMEUTILSTUTORIALSYSTEM_API UTutorialPerUserSettings : public UDeveloperS
 	GENERATED_BODY()
 public:
 
-	UPROPERTY(EditAnywhere, config, meta=(Tooltip="Whether to ignore saving tutorial states between sessions in editor. On by default, so you can test tutorials each time you play in editor"))
+	UPROPERTY(EditAnywhere, config, Category="Saving", meta = (Tooltip = "Whether to ignore saving tutorial states between sessions in editor. On by default, so you can test tutorials each time you play in editor"))
 	bool IgnorePersistentTutorialSavesInEditor = true;
 
 	static const UTutorialPerUserSettings* Get() { return GetDefault<UTutorialPerUserSettings>(); }

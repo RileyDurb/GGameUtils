@@ -15,7 +15,7 @@ struct GGAMEUTILSTUTORIALSYSTEM_API FTutorialCompletionInfo
 	GENERATED_USTRUCT_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="SavedData")
 	int numCompletions = 0;
 };
 /**
@@ -28,10 +28,7 @@ class GGAMEUTILSTUTORIALSYSTEM_API UTutorialSaveGame : public USaveGame
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TutorialStates")
 	TMap<FGameplayTag, FTutorialCompletionInfo> mSavedTutorialStates;
-
-	UPROPERTY(EditAnywhere)
-	bool testSaveWorking = false;
 	
 };

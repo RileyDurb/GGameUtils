@@ -63,7 +63,6 @@ void UTutorialSaveGameInstance::SaveSaveableTutorialStates()
 		UTutorialSaveGame* currentSaveGame = Cast<UTutorialSaveGame>(UGameplayStatics::LoadGameFromSlot(mDefaultSaveGameName, mPlatformUserSlot));
 		//mTutorialSaveGame->mSavedTutorialStates = mTutorialCompletions;
 		currentSaveGame->mSavedTutorialStates = mTutorialCompletions;
-		currentSaveGame->testSaveWorking = true;
 
 		// Saves current tutorial states to a file. TODO: make tutorials able to be individully decided whether they should savee, and also make a debug toggle to make nothing save
 		UGameplayStatics::SaveGameToSlot(currentSaveGame, mDefaultSaveGameName, mPlatformUserSlot);
@@ -96,7 +95,10 @@ void UTutorialSaveGameInstance::Initialize(FSubsystemCollectionBase& Collection)
 	if (UGameplayStatics::DoesSaveGameExist(mDefaultSaveGameName, mPlatformUserSlot) == false || mDebugAlwaysResetSave)
 	{
 		// Create new default save game
-		mTutorialSaveGame = Cast<UTutorialSaveGame>(UGameplayStatics::CreateSaveGameObject(UTutorialSaveGame::StaticClass()));
+		UTutorialSaveGame* newSaveGame = Cast<UTutorialSaveGame>(UGameplayStatics::CreateSaveGameObject(UTutorialSaveGame::StaticClass()));
+		mTutorialSaveGame = newSaveGame;
+
+		UGameplayStatics::SaveGameToSlot(newSaveGame, mDefaultSaveGameName, mPlatformUserSlot); // Saves new game to a file so we can get it later
 	}
 	else // Save game does exist
 	{
@@ -105,8 +107,6 @@ void UTutorialSaveGameInstance::Initialize(FSubsystemCollectionBase& Collection)
 	}
 
 	mTutorialCompletions = mTutorialSaveGame->mSavedTutorialStates;
-
-	UE_LOG(LogTemp, Warning, TEXT("Finished"));
 }
 
 void UTutorialSaveGameInstance::Deinitialize()

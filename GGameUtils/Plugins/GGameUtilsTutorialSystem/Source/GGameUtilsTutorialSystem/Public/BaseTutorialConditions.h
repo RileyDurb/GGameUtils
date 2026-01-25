@@ -62,10 +62,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="GettersAndSetters")
 	APawn* GetPawnFromParent(); // Gets pawn from parent tutorial monitor
 	// Parent Overriden functions /////////////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="TutorialContext")
 	UWorld* GetWorld() const override;
 
-	bool ImplementsGetWorld() const override;
+	virtual bool ImplementsGetWorld() const;
 
 	// Getters and setters ////////////////////////////////////////////////////////////////
 	
@@ -109,10 +109,10 @@ public:
 
 	void SetManuallyCompleted(bool newManuallyCompleted);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="ManualTutorialManaging")
 	void TrySetManuallyTriggered();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="ManualTutorialManaging")
 	void TrySetManuallyCompleted();
 
 	void SetInitTimestamp(float timestamp);
@@ -121,7 +121,7 @@ public:
 	For resetting the completion status
 	Likely only needed for the automatic reset in the tutorial manager, which happens when the tutorial is completed, if the save type is set to don't save
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="HelperFunctions")
 	void ResetCompletionStatusToReady();
 
 	// Blueprint editable variables ///////////////////////////////////////////////////////

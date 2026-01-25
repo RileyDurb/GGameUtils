@@ -22,10 +22,12 @@ void UTutorialMonitor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
 
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds();
 
+	checkf(mTutorialDefinitions != nullptr, TEXT("TutorialMonitor:BeginPlay: No Tutorial definitions data asset set. Must set one in the data assets section of your attached tutorial monitor component, even if you want a blank tutorial list"));
+
+	// Create each tutorial defined in the tutorial definitions data asset
 	for (auto it = mTutorialDefinitions->mTutorials.begin(); it != mTutorialDefinitions->mTutorials.end(); ++it)
 	{
 		// If we have a valid tutorial set for this tutorial
@@ -223,14 +225,24 @@ APlayerController* UTutorialMonitor::GetPlayerControllerForTutorial_Implementati
 {
 	APawn* ownerPawn = Cast<APawn>(GetOwner());
 
-	// Make sure owner is a pawn, put a debug message and return if not
-	if (ownerPawn == nullptr)
+	// If attached to a pawn, get controller and return it
+	if (ownerPawn != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetPlayerControllerForTutoriall:monitor with owner of class %s was not a pawn. Reccomend overriding this function based on what it is owned by to get the player controller to use to create the tutorial."), *ownerPawn->GetActorNameOrLabel());
-
-		return nullptr;
+		return Cast<APlayerController>(ownerPawn->GetController());
 	}
-	return Cast<APlayerController>(ownerPawn->GetController());
+
+	// If attached to a player controller, return self directly
+	APlayerController* selfAsController = Cast<APlayerController>(GetOwner());
+	if (selfAsController != nullptr)
+	{
+		return selfAsController;
+	}
+
+	// If neither attached to a pawn or player controller, print error and return nullptr
+
+	UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetPlayerControllerForTutorial: monitor with owner of class %s was not a pawn or controller. Reccomend overriding this function based on what you've attached it to, to get the controller that should be used to create the tutorial with."), *ownerPawn->GetActorNameOrLabel());
+
+	return nullptr;
 }
 
 bool UTutorialMonitor::TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger)
