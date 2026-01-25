@@ -15,10 +15,10 @@ class GGAMEUTILSTUTORIALSYSTEM_API UDATutorialDefinitions : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "TutorialDefinitions")
 	TMap<FGameplayTag, TSubclassOf<UBaseTutorialConditions>> mTutorials;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AddtionalSettings")
 	TMap<FGameplayTag, FGameplayTagContainer> mTutorialsCanCancelWhichTutorials;
 
 };

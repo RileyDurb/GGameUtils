@@ -37,12 +37,12 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="SaveLocation")
 	FString mDefaultSaveGameName = "Tutorial_Default";
 
 	// Make this editable just in case the game wants different user indexes on the same platform
 	// By default, only uses the 1st slot for all
-	UPROPERTY(EditAnywhere, blueprintReadWrite)
+	UPROPERTY(EditAnywhere, blueprintReadWrite, Category = "SaveLocation")
 	int mPlatformUserSlot = 0;
 
 	// Probably should make this a configuration file, but by default, disables saving in the editor so you can keep testing tutorials, and enables saving in builds

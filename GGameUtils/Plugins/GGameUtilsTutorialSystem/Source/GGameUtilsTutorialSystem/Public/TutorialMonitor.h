@@ -34,7 +34,7 @@ protected:
 	float mInitTimestamp = 0.0f; // Timestamp that the actor began play, for calculating some tutorial stuff
 
 	// Public to make it a uproperty to manage the lifetime of UObjects, but for private logic use
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="References")
 	TMap<FGameplayTag, TObjectPtr<UBaseTutorialConditions>> mCreatedTutorials; // For holding created tutorials and using in tutorial logic
 
 
@@ -62,8 +62,8 @@ public:
 
 
 	// Public editable variables for setting up tutorials
-	UPROPERTY(EditAnywhere)
-	UDATutorialDefinitions* mTutorialDefinitions;
+	UPROPERTY(EditAnywhere, Category="DataAssets")
+	UDATutorialDefinitions* mTutorialDefinitions; // Data asset for which tutorials will be available in game.
 
 private:
 	// Helper functions

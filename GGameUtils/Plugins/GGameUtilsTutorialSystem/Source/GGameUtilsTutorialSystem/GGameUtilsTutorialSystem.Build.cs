@@ -40,7 +40,6 @@ public class GGameUtilsTutorialSystem : ModuleRules
 				"SlateCore",
 				"UMG",
 				"GameplayTags",
-				"UnrealEd", // PerProjectUserSettings class
 				"DeveloperSettings",
 				// ... add private dependencies that you statically link with here ...	
 			}
