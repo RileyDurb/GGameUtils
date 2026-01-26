@@ -164,11 +164,30 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			}
 			else // If not complete, check if tutorial should start, and start it if so
 			{
-				if (currTutorial->IsActive() == false								// if not already active
-				&& 
-				(currTutorial->CheckTutorialShouldActivate(owningPawn) == true      // If activation condition is met
-				|| currTutorial->WasManuallyTriggered()))						    // Or was manually triggered
+				// if already active, skip check to trigger it
+				if (currTutorial->IsActive())
 				{
+					continue;
+				}
+
+				// If manually triggered, don't worry about checking if it should activate, move on to trying to activate
+				bool shouldTryToTrigger = currTutorial->WasManuallyTriggered();
+
+				if (!shouldTryToTrigger) // If not manually triggered, check if should activate
+				{
+					// If there is wait time left before we should trigger tutorial
+					if (GetWorld()->GetRealTimeSeconds() - currTutorial->GetInitTimestamp() <= currTutorial->CurrentTriggerCheckWaitTime())
+					{
+						continue; // Skip this for now, wait until time has elapsed
+					}
+
+					currTutorial->InitializeIfNotAlready();
+					shouldTryToTrigger = currTutorial->CheckTutorialShouldActivate(owningPawn);
+				}
+			
+				if (shouldTryToTrigger)
+				{
+
 					// Check for if tutorial has already been completed from the tutorial saves, and skip + mark as complete if it is
 					if (CanTriggerTutorial(tutorialTag) == false)
 					{
@@ -185,7 +204,7 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 						{
 							if (mTutorialDefinitions->mTutorialsCanCancelWhichTutorials[tutorialTag].HasTag(mActiveTutorials.Last())) // If this tutorial can cancel the active one
 							{
-								canCancelCurrentTutorial = TryQueueTutorialComplete(mActiveTutorials.Last()); // Tries cancelling current tutorial, and saves result
+								canCancelCurrentTutorial = TryQueueTutorialComplete(mActiveTutorials.Last()); // Tries cancelling current tutorial, and gets result
 							}
 						}
 
@@ -193,13 +212,6 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 						{
 							continue; // Don't activate, only allow one tutorial at a time for now
 						}
-					}
-
-
-					// If there is wait time left before we should trigger tutorial
-					if (GetWorld()->GetRealTimeSeconds() - currTutorial->GetInitTimestamp() <= currTutorial->CurrentTriggerCheckWaitTime())
-					{
-						continue; // Skip this for now, wait until time has elapsed
 					}
 
 

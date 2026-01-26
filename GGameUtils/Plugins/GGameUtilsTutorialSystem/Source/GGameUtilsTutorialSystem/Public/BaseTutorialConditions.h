@@ -31,36 +31,55 @@ class GGAMEUTILSTUTORIALSYSTEM_API UBaseTutorialConditions : public UObject
 public:
 	// Public interface /////////////////////////////////////////////////////////
 
-	// Activates the tutorial. Can Be overwritten, or by default, calls add tutorial widget to create and add the popup to the owning pawn
-	virtual void TriggerTutorialStart(APlayerController* monitoToAddTo);
+	// Activates the tutorial. Sets variables, and calls UI setup
+	void TriggerTutorialStart(APlayerController* controllerToAddTo);
 
-	// Can be overwritten, but at it's base
+	// Can be overwritten, or by default, creates tutorial widget, sets visual override data if that is enabled, and calls AddTutorialWidget
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InterfaceOverrides")
+	void CallTutorialUISetup(APlayerController* controllerToAddTo);
+	virtual void CallTutorialUISetup_Implementation(APlayerController* controllerToAddTo);
+
+	// Can be overwritten to handle adding UI in a particular way. At it's base just adds the tutorial widget to the player's viewport
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InterfaceOverrides")
 	void AddTutorialWidget(APlayerController* controllerToAddTo, UUserWidget* widgetPopup);
-	void AddTutorialWidget_Implementation(APlayerController* controllerToAddTo, UUserWidget* widgetPopup);
+	virtual void AddTutorialWidget_Implementation(APlayerController* controllerToAddTo, UUserWidget* widgetPopup);
 
-	// Deactivates the tutorial. Calls the overwritable OnTriggerTutorialEnd to determine what to do
+	// Deactivates the tutorial. Calls the overwritable OnTriggerTutorialEnd to determine how to close the tutorial
 	void TriggerTutorialEnd(APlayerController* optionalPawnContext);
 
+	// Closes tutorial UI. Can be overwritten to end tutorial using your own UI handling, and if overriding, make sure you remove the tutorial UI yourself, or add a call to the parent function
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "InterfaceOverrides")
 	void OnTriggerTutorialEnd(APlayerController* pawnContextToUse);
 	virtual void OnTriggerTutorialEnd_Implementation(APlayerController* pawnContextToUse);
 
 
+	// You can override to make your own completion condition, and it will end the tutorial when you return true
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Conditions")
-	bool CheckTutorialComplete(APawn* pawnContextToUse);
+	bool CheckTutorialComplete(APawn* pawnContextToUse); 
 	virtual bool CheckTutorialComplete_Implementation(APawn* pawnContextToUse);
 
+	// You can override to make your own activation condition, and it will activate the tutorial when you return true
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Conditions")
-	bool CheckTutorialShouldActivate(APawn* pawnContextToUse);
+	bool CheckTutorialShouldActivate(APawn* pawnContextToUse);  
 	virtual bool CheckTutorialShouldActivate_Implementation(APawn* pawnContextToUse);
+
+	// Optional function to override to create any initialization logic you may want to happen right before the first activation check each restart.
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Conditions")
+	void InitializeOnFirstCheckToActivate(APawn* pawnContextToUse); 
+	virtual void InitializeOnFirstCheckToActivate_Implementation(APawn* pawnContextToUse);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable,  Category = "BehaviourOverrides", meta=(ForceAsFunction))
 	void ResetCustomVariables();
 	virtual void ResetCustomVariables_Implementation();
 
+	// Call alongside the CheckTutorialShouldActivate check, to call the initialization function
+	UFUNCTION(BlueprintCallable, Category = "HelperFunctions")
+	void InitializeIfNotAlready();
+
+	// Gets pawn from parent tutorial monitor
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="GettersAndSetters")
-	APawn* GetPawnFromParent(); // Gets pawn from parent tutorial monitor
+	APawn* GetPawnFromParent();
+
 	// Parent Overriden functions /////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category="TutorialContext")
 	UWorld* GetWorld() const override;
@@ -81,11 +100,13 @@ public:
 
 	bool WasManuallyCompleted() const { return mWasManuallyCompleted; }
 
+	// Gets real timestamp when tutorial was first able to start checking for activation. This is either when it was first constructed, or when it was last restarted
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "GettersAndSetters")
-	float GetInitTimestamp() const { return mInitTimestamp; } // Gets real timestamp when tutorial was first set active, either when it was first constructed, or after being completed, if it is set to restart.
+	float GetInitTimestamp() const { return mInitTimestamp; } 
 
+	// Gets real timestamp when tutorial was triggered (not affected by time dillation)
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
-	float GetTriggeredTimestamp() const { return mTriggeredTimestamp; } // Gets real timestamp when tutorial was triggered
+	float GetTriggeredTimestamp() const { return mTriggeredTimestamp; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
 	int GetMaxSavedCompletions() const { return mMaxSavedTutorialCompletions; }
@@ -97,7 +118,7 @@ public:
 
 	ETutorialCompletionSaveType GetCompletionSaveType() const { return mSaveType; }
 
-	FTutorialTriggerFunc GetTutorialTriggerDelegate();
+	FTutorialTriggerFunc GetTutorialTriggerDelegate();  // Gets a delegate that manually activates the tutorial when invoked
 
 	FTutorialCompleteTriggerFunc GetTutorialCompleteTriggerDelegate(); // Gets a delegate that manually completes the tutorial when invoked
 
@@ -173,9 +194,9 @@ protected:
 
 
 private:
-	//bool mHasTickCheck
 
 	// Private variables
+	// Make sure to reset any of these variables that should be reset when restarting a tutorial to be able to trigger it again, in the "ResetCompletionStatusToReady" function
 
 	bool mIsActive = false;
 
@@ -190,6 +211,8 @@ private:
 	float mTriggeredTimestamp = 0.0f;
 
 	bool mHasBeenRestarted = false;
+
+	bool mWasInitialized = false;
 
 
 };

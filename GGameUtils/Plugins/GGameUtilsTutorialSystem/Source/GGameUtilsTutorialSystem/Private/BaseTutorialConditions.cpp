@@ -53,7 +53,16 @@ APawn* GetTutorialPlayerFromOuter(UBaseTutorialConditions* tutorialToUse)
 void UBaseTutorialConditions::TriggerTutorialStart(APlayerController* controllerToUse)
 {
 
-	mCreatedTutorialWidget = CreateWidget(controllerToUse, mTutorialPopupClass);
+	CallTutorialUISetup(controllerToUse);
+
+	mIsActive = true;
+
+	mTriggeredTimestamp = GetWorld()->GetRealTimeSeconds();
+}
+
+void UBaseTutorialConditions::CallTutorialUISetup_Implementation(APlayerController* controllerToAddTo)
+{
+	mCreatedTutorialWidget = CreateWidget(controllerToAddTo, mTutorialPopupClass);
 
 	if (mUseVisualDataOverride)
 	{
@@ -65,11 +74,7 @@ void UBaseTutorialConditions::TriggerTutorialStart(APlayerController* controller
 	}
 
 
-	AddTutorialWidget(controllerToUse, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
-
-	mIsActive = true;
-
-	mTriggeredTimestamp = GetWorld()->GetRealTimeSeconds();
+	AddTutorialWidget(controllerToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
 }
 
 void UBaseTutorialConditions::AddTutorialWidget_Implementation(APlayerController* controlerUsed, UUserWidget* widgetPopup)
@@ -89,9 +94,24 @@ bool UBaseTutorialConditions::CheckTutorialShouldActivate_Implementation(APawn* 
 	return false;
 }
 
+void UBaseTutorialConditions::InitializeOnFirstCheckToActivate_Implementation(APawn* pawnContextToUse)
+{
+	// Nothing to initialize by default
+}
+
 void UBaseTutorialConditions::ResetCustomVariables_Implementation()
 {
 	// Does nothing by default, base variables already reset as a part of the code that calls this function
+}
+
+void UBaseTutorialConditions::InitializeIfNotAlready()
+{
+	if (mWasInitialized == false)
+	{
+		InitializeOnFirstCheckToActivate(GetPawnFromParent());
+
+		mWasInitialized = true;
+	}
 }
 
 APawn* UBaseTutorialConditions::GetPawnFromParent()
@@ -205,9 +225,13 @@ void UBaseTutorialConditions::ResetCompletionStatusToReady()
 
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds(); // Reset init timestamp to now
 
+	mWasInitialized = false;
+
 	ResetCustomVariables(); // Calls overridable reset variables function, to let the derived tutorial reset any variables it may have created that need it
 
 	mHasBeenRestarted = true;
+
+
 }
 
 void UBaseTutorialConditions::TriggerTutorialEnd(APlayerController* controllerContext)
