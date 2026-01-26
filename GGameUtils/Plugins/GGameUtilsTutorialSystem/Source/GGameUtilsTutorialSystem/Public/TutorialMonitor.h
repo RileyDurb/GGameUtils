@@ -42,7 +42,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// Turn these into peices of a base tutorial definition object
+	// Gets the player controller to use, based on what this component is attached to. By default supports attaching to a player controller, or the pawn it controls. Can override this
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category="TutorialContextOverride")
 	APlayerController* GetPlayerControllerForTutorial();
 	APlayerController* GetPlayerControllerForTutorial_Implementation();
@@ -50,10 +50,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "TutorialTriggering")
 	bool TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger);
 
+	// Gets a delagate that when called, will activate the tutorial. Meant for binding to an event dispacter
 	UFUNCTION(BlueprintCallable, Category = "TutorialTriggering")
 	FTutorialTriggerFunc GetTriggerTutorialDelegate(FGameplayTag tutorialToTrigger);
 
-
+	// Gets a delagate that when called, will trigger the tutorial's completion. Meant for binding to an event dispacter
 	UFUNCTION(BlueprintCallable, Category="TutorialEnding")
 	FTutorialCompleteTriggerFunc GetTriggerTutorialCompleteDelegate(FGameplayTag tutorialToEnd);
 
@@ -62,8 +63,10 @@ public:
 
 
 	// Public editable variables for setting up tutorials
+
+	// Data asset for which tutorials will be available in game.
 	UPROPERTY(EditAnywhere, Category="DataAssets")
-	UDATutorialDefinitions* mTutorialDefinitions; // Data asset for which tutorials will be available in game.
+	UDATutorialDefinitions* mTutorialDefinitions;
 
 private:
 	// Helper functions
