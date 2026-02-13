@@ -60,7 +60,7 @@ UTutorialMonitor* ATutorialTriggerBoxBase::GetTutorialMonitorFromActor_Implement
 
 	if (playerController == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TutorialTriggerBoxBase:GetTutorialMonitorFromActor_Implementation: No tutorial manager was found on the given pawn, and pawn has no controller to look for a tutorial manager on Add a tutorial manager, or override"));
+		UE_LOG(LogTemp, Warning, TEXT("TutorialTriggerBoxBase:GetTutorialMonitorFromActor_Implementation: No tutorial manager was found on the given pawn, and pawn has no controller to look for a tutorial manager on. Should add one, or override this function to get it from somewhere else"));
 		return nullptr; // No player controller to get the component from, return failiure
 	}
 
