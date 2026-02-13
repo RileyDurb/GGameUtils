@@ -11,7 +11,7 @@ struct GGAMEUTILSTUTORIALSYSTEM_API FTutorialBasicVisualsData
 	GENERATED_USTRUCT_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Text")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Text", meta=(Multiline = true))
 	FText tutorialTextOverride;
 
 };
