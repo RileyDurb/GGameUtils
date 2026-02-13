@@ -14,6 +14,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Text", meta=(Multiline = true))
 	FText tutorialTextOverride;
 
+	// Data table made from type "RichTextStyleRow" That you can use to define the text's font, size and more. Reccomend not doing anything it user leaves this variable left blank
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Text")
+	UDataTable* textStyleDataTable;
+
 };
 
 /**
