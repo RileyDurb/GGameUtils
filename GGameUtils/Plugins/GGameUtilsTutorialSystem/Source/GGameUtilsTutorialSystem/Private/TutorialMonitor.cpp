@@ -1,7 +1,8 @@
-// Copyright (c) 2025 Guardbrawl Games
+// Copyright (c) 2026 Guardbrawl Games
 
 #include "TutorialMonitor.h"
 #include "TutorialSaveGameInstance.h"
+#include "Engine/GameInstance.h" // For game instance getter, UE 5.5 and above doesn't compile without this include
 
 #include "GameFramework/Pawn.h"
 
@@ -261,7 +262,7 @@ bool UTutorialMonitor::TryQueueTutorialTrigger(FGameplayTag tutorialToTrigger)
 {
 	if (mCreatedTutorials.Contains(tutorialToTrigger) == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:TryQueueTutorialTrigger:tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToTrigger.GetTagName());
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:TryQueueTutorialTrigger:tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), *tutorialToTrigger.GetTagName().ToString());
 		return false;
 	}
 
@@ -279,7 +280,7 @@ FTutorialTriggerFunc UTutorialMonitor::GetTriggerTutorialDelegate(FGameplayTag t
 {
 	if (mCreatedTutorials.Contains(tutorialToTrigger) == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetTriggerTutorialDelegate: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToTrigger.GetTagName());
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetTriggerTutorialDelegate: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), *tutorialToTrigger.GetTagName().ToString());
 		return FTutorialTriggerFunc();
 	}
 
@@ -291,7 +292,7 @@ bool UTutorialMonitor::TryQueueTutorialComplete(FGameplayTag tutorialToEnd)
 {
 	if (mCreatedTutorials.Contains(tutorialToEnd) == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:TryTriggerTutorialComplete:tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToEnd.GetTagName());
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:TryTriggerTutorialComplete:tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), *tutorialToEnd.GetTagName().ToString());
 		return false;
 	}
 
@@ -310,7 +311,7 @@ bool UTutorialMonitor::CanTriggerTutorial(FGameplayTag tutorialTag)
 {
 	if (mCreatedTutorials.Contains(tutorialTag) == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:CanTriggerTutorial :tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialTag.GetTagName());
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:CanTriggerTutorial :tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), *tutorialTag.GetTagName().ToString());
 		return false;
 	}
 
@@ -326,7 +327,7 @@ FTutorialCompleteTriggerFunc UTutorialMonitor::GetTriggerTutorialCompleteDelegat
 {
 	if (mCreatedTutorials.Contains(tutorialToEnd) == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetTriggerTutorialCompleteDelegate: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), tutorialToEnd.GetTagName());
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetTriggerTutorialCompleteDelegate: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), *tutorialToEnd.GetTagName().ToString());
 		return FTutorialCompleteTriggerFunc();
 	}
 

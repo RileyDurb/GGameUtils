@@ -1,11 +1,12 @@
-// Copyright (c) 2025 Guardbrawl Games
+// Copyright (c) 2026 Guardbrawl Games
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
-//#include "TimerManager.h"
+
+
 
 #include "BaseTutorialConditions.h"
 #include "DATutorialDefinitions.h"

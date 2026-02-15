@@ -1,8 +1,9 @@
-// Copyright (c) 2025 Guardbrawl Games
+// Copyright (c) 2026 Guardbrawl Games
 
 
 
 #include "TutorialTriggerBoxBase.h"
+#include "GameFramework/Pawn.h"
 
 
 void ATutorialTriggerBoxBase::NotifyActorBeginOverlap(AActor* otherActor)
