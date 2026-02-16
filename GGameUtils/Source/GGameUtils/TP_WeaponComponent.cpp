@@ -9,6 +9,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GGameUtils/Public/TutorialConditions_ShootControls.h"
+
+#include "GGameUtilsTutorialSystem/Public/TutorialMonitor.h"
 
 // Sets default values for this component's properties
 UTP_WeaponComponent::UTP_WeaponComponent()
@@ -97,6 +100,19 @@ void UTP_WeaponComponent::AttachWeapon(AGGameUtilsCharacter* TargetCharacter)
 			// Fire
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
 		}
+	}
+
+	// Handle tutorials
+	UTutorialMonitor* tutorials = TargetCharacter->GetController()->GetComponentByClass<UTutorialMonitor>();
+
+	if (tutorials != nullptr)
+	{
+		// Trigger the tutorial for the controls
+		tutorials->TryQueueTutorialTrigger(GGameUtils_Tutorials_CPPShootTutorial);
+
+
+		// Bind tutorial's completion to the on fire event
+		OnWeaponFired.Add(tutorials->GetTriggerTutorialCompleteDelegate(GGameUtils_Tutorials_CPPShootTutorial));
 	}
 }
 

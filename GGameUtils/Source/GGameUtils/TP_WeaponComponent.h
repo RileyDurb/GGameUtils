@@ -9,6 +9,7 @@
 class AGGameUtilsCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNoParamEvent);
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GGAMEUTILS_API UTP_WeaponComponent : public USkeletalMeshComponent
@@ -53,6 +54,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnFireEvent OnWeaponFired;
+	
 
 protected:
 	/** Ends gameplay for this component. */
