@@ -32,6 +32,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	virtual void InitializeComponent() override;
+
 	float mInitTimestamp = 0.0f; // Timestamp that the actor began play, for calculating some tutorial stuff
 
 	// Public to make it a uproperty to manage the lifetime of UObjects, but for private logic use
