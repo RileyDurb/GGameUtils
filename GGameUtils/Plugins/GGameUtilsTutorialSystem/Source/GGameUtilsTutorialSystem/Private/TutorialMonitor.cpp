@@ -14,6 +14,8 @@ UTutorialMonitor::UTutorialMonitor()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	bWantsInitializeComponent = true;
+
 	// ...
 }
 
@@ -22,6 +24,12 @@ UTutorialMonitor::UTutorialMonitor()
 void UTutorialMonitor::BeginPlay()
 {
 	Super::BeginPlay();
+
+}
+
+void UTutorialMonitor::InitializeComponent()
+{
+	Super::InitializeComponent();
 
 
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds();
