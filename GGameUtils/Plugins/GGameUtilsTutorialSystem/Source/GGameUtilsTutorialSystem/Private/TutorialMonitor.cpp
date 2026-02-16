@@ -32,9 +32,17 @@ void UTutorialMonitor::InitializeComponent()
 	Super::InitializeComponent();
 
 
+	if (GetWorld()->IsEditorWorld() && GetWorld()->IsGameWorld() == false) // If just in the editor
+	{
+		return; // Don't create any tutorials when previewing in editor, the save subsystem won't exist yet, and we don't need them to be created outside of the game in general
+	}
+	
 	mInitTimestamp = GetWorld()->GetRealTimeSeconds();
 
-	checkf(mTutorialDefinitions != nullptr, TEXT("TutorialMonitor:BeginPlay: No Tutorial definitions data asset set. Must set one in the data assets section of your attached tutorial monitor component, even if you want a blank tutorial list"));
+	// Check if tutorial definitions data asset is set
+	
+	// Have a breaking check if there's not tutorial definitions data asset set
+	checkf(mTutorialDefinitions != nullptr, TEXT("TutorialMonitor:BeginPlay: No Tutorial definitions data asset set on actor %s. Must set one in the data assets section of your attached tutorial monitor component, even if you want a blank tutorial list"), *AActor::GetDebugName(GetOwner()));
 
 	// Create each tutorial defined in the tutorial definitions data asset
 	for (auto it = mTutorialDefinitions->mTutorials.begin(); it != mTutorialDefinitions->mTutorials.end(); ++it)
