@@ -25,14 +25,7 @@ public class GGameUtilsTutorialSystem : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",                
-				"CoreUObject",
-                "Engine",
-                "Slate",
-                "SlateCore",
-                "UMG",
-                "GameplayTags",
-                "DeveloperSettings"
+
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -41,7 +34,14 @@ public class GGameUtilsTutorialSystem : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "Slate",
+                "SlateCore",
+                "UMG",
+                "GameplayTags",
+                "DeveloperSettings"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
