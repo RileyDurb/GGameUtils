@@ -19,6 +19,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Text")
 	UDataTable* textStyleDataTable = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Image")
+	UTexture2D* backgroundImage = nullptr; // Image to use (if left blank, uses a solid color)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Image")
+	FVector2D backgroundImageSize = FVector2D(1920.0f, 1080.0f); // Image size, based on the base screen resolution
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Image")
+	FLinearColor imageColor = FLinearColor::White;
 };
 
 /**
