@@ -7,6 +7,7 @@
 //#include "UObject/NoExportTypes.h"
 //#include "TutorialMonitor.h"
 #include "StructDefinitionsFile.h"
+#include "TutorialInfoSetter.h"
 #include "BaseTutorialConditions.generated.h"
 
 UENUM(BlueprintType)
@@ -188,6 +189,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Visuals")
 	FTutorialBasicVisualsData mVisualData;
+
+	UPROPERTY(EditAnywhere, Instanced, Category = "Visuals")
+	TArray<UTutorialInfoSetter*> mAdditionalWidgetInfoSetters;
 
 	UPROPERTY(EditAnywhere, Category = "Saving Behaviour")
 	ETutorialCompletionSaveType mSaveType = ETutorialCompletionSaveType::SaveOnlyForSession;

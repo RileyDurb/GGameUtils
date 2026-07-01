@@ -73,6 +73,12 @@ void UBaseTutorialConditions::CallTutorialUISetup_Implementation(APlayerControll
 		}
 	}
 
+	// Apply each info setter (if any)
+	for (int i = 0; i < mAdditionalWidgetInfoSetters.Num(); i++)
+	{
+		mAdditionalWidgetInfoSetters[i]->SetInfoFromExposedVariables(mCreatedTutorialWidget);
+	}
+
 
 	AddTutorialWidget(controllerToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
 }
