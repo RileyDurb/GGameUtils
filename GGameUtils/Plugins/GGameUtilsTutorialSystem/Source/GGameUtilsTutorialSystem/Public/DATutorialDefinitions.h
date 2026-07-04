@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
 #include "BaseTutorialConditions.h"
+#include "DefaultTutorialTagDefs.h"
 #include "DATutorialDefinitions.generated.h"
 
 

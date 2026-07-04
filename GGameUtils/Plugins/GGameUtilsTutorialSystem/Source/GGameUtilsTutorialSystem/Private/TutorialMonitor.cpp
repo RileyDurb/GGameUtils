@@ -184,6 +184,13 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 				// if already active, skip check to trigger it
 				if (currTutorial->IsActive())
 				{
+					// Checks if tutorial should auto end
+					if (currTutorial->ShouldAutoEnd())
+					{
+						TryQueueTutorialComplete(tutorialTag); // Trigger tutorial end the same way it would be done when manually triggering completion
+					}
+
+					// If reaching here, tutorial is active and not auto ending, move on to next tutorial
 					continue;
 				}
 
@@ -236,14 +243,6 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 					currTutorial->TriggerTutorialStart(GetPlayerControllerForTutorial());
 
 					mActiveTutorials.AddTag(tutorialTag); // Tracks that this tutorial is active, to manage whether other tutorials can be activated
-				}
-				else if (currTutorial->IsActive())
-				{
-					// Checks if tutorial should auto end
-					if (currTutorial->ShouldAutoEnd())
-					{
-						TryQueueTutorialComplete(tutorialTag); // Trigger tutorial end the same way it would be done when manually triggering completion
-					}
 				}
 			}
 		}
