@@ -24,6 +24,6 @@ class EXAMPLES_API IBPI_TutorialTransitions
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category="ReusemSetters")
 	void SetTutorialTransitions(FGameplayTag openTransitionTag, FGameplayTag closeTransitionTag);
 };

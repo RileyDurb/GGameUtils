@@ -39,9 +39,9 @@ public:
 	}
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Default")
 	FGameplayTag mOpenTransitionTag;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Default")
 	FGameplayTag mCloseTransitionTag;
 };
