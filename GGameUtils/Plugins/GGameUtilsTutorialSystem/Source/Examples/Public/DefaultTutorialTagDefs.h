@@ -17,7 +17,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_Tutorials_ExampleHey5);
  * 
  */
 UCLASS()
-class GGAMEUTILSTUTORIALSYSTEM_API UDefaultTutorialTagDefs : public UObject
+class EXAMPLES_API UDefaultTutorialTagDefs : public UObject
 {
 	GENERATED_BODY()
 public:
