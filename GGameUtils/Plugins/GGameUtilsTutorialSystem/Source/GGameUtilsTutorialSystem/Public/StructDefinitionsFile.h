@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Engine/Texture2D.h"
 #include "StructDefinitionsFile.generated.h"
 
 USTRUCT(BlueprintType)
