@@ -2,25 +2,28 @@
 
 set ueVersion=5.3
 
+:: set build configuration to work for UE 5.3
+xcopy /y "C:\Users\epicm\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration_UE5.3.xml" "C:\Users\epicm\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml"
 call :buildPlugin %ueVersion%
 call :copyBuiltFilesToRelease %ueVersion%
 
+
+:: set build configuration to work for newer engine versions
+xcopy /y "C:\Users\epicm\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration_UE5.4Plus.xml" "C:\Users\epicm\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml"
 set ueVersion=5.4
 
 call :buildPlugin %ueVersion%
 call :copyBuiltFilesToRelease %ueVersion%
 
 
-set ueVersion=5.5
-
-call :buildPlugin %ueVersion%
-call :copyBuiltFilesToRelease %ueVersion%
 
 set ueVersion=5.6
 
 call :buildPlugin %ueVersion%
 call :copyBuiltFilesToRelease %ueVersion%
 
+:: set build configuration back to working for UE 5.3
+xcopy /y "C:\Users\epicm\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration_UE5.3.xml" "C:\Users\epicm\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml"
 pause
 exit
 
