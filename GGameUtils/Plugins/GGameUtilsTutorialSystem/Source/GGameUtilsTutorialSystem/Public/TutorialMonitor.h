@@ -64,6 +64,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TutorialEnding")
 	bool TryQueueTutorialComplete(FGameplayTag tutorialToEnd);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category ="GettersAndSetters")
+	bool IsTutorialComplete(FGameplayTag tutorialToCheck);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category ="GettersAndSetters")
+	FGameplayTag GetTutorialTagRelativeToTutorial(FGameplayTag tutorialForStartingPosition, int howManyTutorialsAway);
 
 	// Public editable variables for setting up tutorials
 

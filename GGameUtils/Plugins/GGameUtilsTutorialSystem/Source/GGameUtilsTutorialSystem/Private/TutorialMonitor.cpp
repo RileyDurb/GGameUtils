@@ -322,6 +322,44 @@ bool UTutorialMonitor::TryQueueTutorialComplete(FGameplayTag tutorialToEnd)
 	return false;
 }
 
+bool UTutorialMonitor::IsTutorialComplete(FGameplayTag tutorialToCheck)
+{
+	if (mCreatedTutorials.Contains(tutorialToCheck) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:IsTutorialComplete: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), *tutorialToCheck.GetTagName().ToString());
+		return false;
+	}
+
+	
+	return mCreatedTutorials[tutorialToCheck]->IsCompleted();
+}
+
+FGameplayTag UTutorialMonitor::GetTutorialTagRelativeToTutorial(FGameplayTag tutorialForStartingPosition, int howManyTutorialsAway)
+{
+	if (mCreatedTutorials.Contains(tutorialForStartingPosition) == false)
+	{
+		/*UE_LOG(LogTemp, Warning, TEXT("UTutorialMonitor:GetTutorialTagRelativeToTutorial: tutorial of tag %s does not exist. Check the tutorial definitions data asset in this component"), *tutorialForStartingPosition.GetTagName().ToString());*/
+		return FGameplayTag(); // Return empty gameplay tag
+	}
+
+	// Gets array of keys 
+	TArray<FGameplayTag> tutorialTags;
+	mCreatedTutorials.GetKeys(tutorialTags);
+
+	// Find index if starting tag
+	FGameplayTag foundTag;
+	int32 foundIndex = -1;
+	bool tagExists = tutorialTags.Find(tutorialForStartingPosition, foundIndex);
+
+	// Check if the desired amount of the tutorials away from the starting tutorial is outside how many tutorials we have
+	if (foundIndex + howManyTutorialsAway >= tutorialTags.Num() || foundIndex + howManyTutorialsAway < 0)
+	{
+		return FGameplayTag(); // No such tutorial exists, return empty tag
+	}
+
+	return tutorialTags[foundIndex + howManyTutorialsAway];
+}
+
 bool UTutorialMonitor::CanTriggerTutorial(FGameplayTag tutorialTag)
 {
 	if (mCreatedTutorials.Contains(tutorialTag) == false)
@@ -349,4 +387,3 @@ FTutorialCompleteTriggerFunc UTutorialMonitor::GetTriggerTutorialCompleteDelegat
 
 	return mCreatedTutorials[tutorialToEnd]->GetTutorialCompleteTriggerDelegate();
 }
-
