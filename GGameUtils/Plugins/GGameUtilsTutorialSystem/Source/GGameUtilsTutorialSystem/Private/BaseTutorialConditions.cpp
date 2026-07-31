@@ -125,6 +125,11 @@ APawn* UBaseTutorialConditions::GetPawnFromParent()
 	return GetTutorialPlayerFromOuter(this);
 }
 
+TArray<UTutorialInfoSetter*> UBaseTutorialConditions::GetInfoSetters()
+{
+	return mAdditionalWidgetInfoSetters;
+}
+
 UWorld* UBaseTutorialConditions::GetWorld() const
 {
 	return GetOuter()->GetWorld(); // Returns parent's world

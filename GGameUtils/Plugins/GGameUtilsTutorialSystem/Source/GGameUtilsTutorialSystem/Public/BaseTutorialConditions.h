@@ -81,6 +81,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="GettersAndSetters")
 	APawn* GetPawnFromParent();
 
+	UFUNCTION(BlueprintCallable, Category="GettersAndSetters")
+	TArray<UTutorialInfoSetter*> GetInfoSetters();
+
 	// Parent Overriden functions /////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category="TutorialContext")
 	UWorld* GetWorld() const override;
@@ -146,6 +149,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="HelperFunctions")
 	void ResetCompletionStatusToReady();
 
+	UFUNCTION(CallInEditor, Category="Visuals")
+	void PreviewInfoSetterResults() {};
 	// Blueprint editable variables ///////////////////////////////////////////////////////
 
 	// Widget class to spawn for the tutorial. If using your own widget, implement the TutorialPopupInterface and its functions so it can be controlled by the tutorial
@@ -183,15 +188,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Completion Behaviour")
 	float mAutoEndWaitTime = -1.0f; 
 
+	UPROPERTY(EditAnywhere, Instanced, Category = "Visuals")
+	TArray<UTutorialInfoSetter*> mAdditionalWidgetInfoSetters;
+
 	// If true, overrides the below information on the tutorial widget through the ITutorialPopupInterface. Enables using the same widget for multiple tutorials
 	UPROPERTY(EditAnywhere, Category = "Visuals")
 	bool mUseVisualDataOverride = true;
 
 	UPROPERTY(EditAnywhere, Category = "Visuals")
 	FTutorialBasicVisualsData mVisualData;
-
-	UPROPERTY(EditAnywhere, Instanced, Category = "Visuals")
-	TArray<UTutorialInfoSetter*> mAdditionalWidgetInfoSetters;
 
 	UPROPERTY(EditAnywhere, Category = "Saving Behaviour")
 	ETutorialCompletionSaveType mSaveType = ETutorialCompletionSaveType::SaveOnlyForSession;
