@@ -149,8 +149,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="HelperFunctions")
 	void ResetCompletionStatusToReady();
 
-	UFUNCTION(CallInEditor, Category="Visuals")
-	void PreviewInfoSetterResults() {};
 	// Blueprint editable variables ///////////////////////////////////////////////////////
 
 	// Widget class to spawn for the tutorial. If using your own widget, implement the TutorialPopupInterface and its functions so it can be controlled by the tutorial

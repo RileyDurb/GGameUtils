@@ -6,6 +6,8 @@
 //#if WITH_EDITOR
 #include "Editor/DetailCustomizations/Public/DetailCustomizations.h"
 #include "Editor/PropertyEditor/Public/IDetailCustomization.h"
+#include "BaseTutorialConditions.h"
+
 
 
 
@@ -18,6 +20,9 @@ public:
 	static TSharedRef<IDetailCustomization> MakeInstance();
 
 	virtual void CustomizeDetails(IDetailLayoutBuilder& detailBuilder) override;
+
+private:
+	void ActivatePreviewEditorWidget(UBaseTutorialConditions* tutorialConditions);
 
 };
 
