@@ -196,6 +196,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Visuals")
 	FTutorialBasicVisualsData mVisualData;
 
+	UPROPERTY(EditAnywhere, Category = "SetupOverriding")
+	bool mApplyInfoSettersBeforeAddingToViewport = true;
+
 	UPROPERTY(EditAnywhere, Category = "Saving Behaviour")
 	ETutorialCompletionSaveType mSaveType = ETutorialCompletionSaveType::SaveOnlyForSession;
 

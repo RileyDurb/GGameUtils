@@ -64,6 +64,11 @@ void UBaseTutorialConditions::CallTutorialUISetup_Implementation(APlayerControll
 {
 	mCreatedTutorialWidget = CreateWidget(controllerToAddTo, mTutorialPopupClass);
 
+	if (mApplyInfoSettersBeforeAddingToViewport == false) // Add widget before info setters are applied, if setting is set to do so
+	{
+		AddTutorialWidget(controllerToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
+	}
+
 	if (mUseVisualDataOverride)
 	{
 		if (mCreatedTutorialWidget->GetClass()->ImplementsInterface(UTutorialPopupInterface::StaticClass()))
@@ -79,8 +84,10 @@ void UBaseTutorialConditions::CallTutorialUISetup_Implementation(APlayerControll
 		mAdditionalWidgetInfoSetters[i]->SetInfoFromExposedVariables(mCreatedTutorialWidget);
 	}
 
-
-	AddTutorialWidget(controllerToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
+	if (mApplyInfoSettersBeforeAddingToViewport == true) // Add widget after info setters are applied, if setting is set to do so
+	{
+		AddTutorialWidget(controllerToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
+	}
 }
 
 void UBaseTutorialConditions::AddTutorialWidget_Implementation(APlayerController* controlerUsed, UUserWidget* widgetPopup)

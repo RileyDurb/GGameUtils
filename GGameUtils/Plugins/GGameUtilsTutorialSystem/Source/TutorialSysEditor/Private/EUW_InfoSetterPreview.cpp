@@ -9,26 +9,29 @@ void UEUW_InfoSetterPreview::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UEUW_InfoSetterPreview::InitializePreviewWidgetFromTutorialConditions(UBaseTutorialConditions* tutorialConditionsToUse)
-{
-	UUserWidget* widgetToPreview = CreateWidget(this, tutorialConditionsToUse->mTutorialPopupClass);
+//void UEUW_InfoSetterPreview::InitializePreviewWidgetFromTutorialConditions(UBaseTutorialConditions* tutorialConditionsToUse)
+//{
+//	UUserWidget* widgetToPreview = CreateWidget(this, tutorialConditionsToUse->mTutorialPopupClass);
+//
+//	// Ensures created widget is valid
+//	if (widgetToPreview == nullptr)
+//	{
+//		FString tutorialName;
+//		tutorialConditionsToUse->GetName(tutorialName);
+//		UE_LOG(LogTemp, Warning, TEXT("UEUW_InfoSetterPreview::InitializePreviewWidgetFromTutorialConditions: given tutorial conditions %s did not have a valid popup widget to create"), *tutorialName);
+//		return;
+//	}
+//
+//	TArray<UTutorialInfoSetter*> infoSetters = tutorialConditionsToUse->GetInfoSetters();
+//
+//	// Add to parent
+//	ParentPreview->AddChildToCanvas(Cast<UWidget>(widgetToPreview));
+//
+//	// Apply each info setter (if any)
+//	for (int i = 0; i < infoSetters.Num(); i++)
+//	{
+//		infoSetters[i]->SetInfoFromExposedVariables(widgetToPreview);
+//	}
+//
 
-	// Ensures created widget is valid
-	if (widgetToPreview == nullptr)
-	{
-		FString tutorialName;
-		tutorialConditionsToUse->GetName(tutorialName);
-		UE_LOG(LogTemp, Warning, TEXT("UEUW_InfoSetterPreview::InitializePreviewWidgetFromTutorialConditions: given tutorial conditions %s did not have a valid popup widget to create"), *tutorialName);
-		return;
-	}
-
-	TArray<UTutorialInfoSetter*> infoSetters = tutorialConditionsToUse->GetInfoSetters();
-	// Apply each info setter (if any)
-	for (int i = 0; i < infoSetters.Num(); i++)
-	{
-		infoSetters[i]->SetInfoFromExposedVariables(widgetToPreview);
-	}
-
-	// Add to parent
-	ParentOverlay->AddChildToOverlay(Cast<UWidget>(widgetToPreview));
-}
+//}
