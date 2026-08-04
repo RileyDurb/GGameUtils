@@ -17,6 +17,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialOpenTransitions_FromRight);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialOpenTransitions_FromTop);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialOpenTransitions_FromBottom);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialOpenTransitions_FadeIn);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialOpenTransitions_None);
 
 // Close transition tag declarations
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialCloseTransitions_ToLeft);
@@ -24,6 +25,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialCloseTransitions_ToRight);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialCloseTransitions_ToTop);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialCloseTransitions_ToBottom);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialCloseTransitions_FadeOut);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialCloseTransitions_None);
 
 
 
@@ -45,9 +47,9 @@ public:
 	}
 
 private:
-	UPROPERTY(EditAnywhere, Category="Default")
-	FGameplayTag mOpenTransitionTag;
+	UPROPERTY(EditAnywhere, Category = "Default")
+	FGameplayTag mOpenTransitionTag = GGameUtils_TutorialOpenTransitions_FromLeft;
 
 	UPROPERTY(EditAnywhere, Category = "Default")
-	FGameplayTag mCloseTransitionTag;
+	FGameplayTag mCloseTransitionTag = GGameUtils_TutorialCloseTransitions_ToLeft;
 };

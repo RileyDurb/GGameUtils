@@ -160,7 +160,6 @@ public:
 	UPROPERTY()
 	UUserWidget* mCreatedTutorialWidget; // For saving the tutorial widget we spawn
 
-
 protected:
 
 	// If enabled, will check the completion condition before tutorial is triggered, allowing the tutorial not to be shown if completed before it's triggered
