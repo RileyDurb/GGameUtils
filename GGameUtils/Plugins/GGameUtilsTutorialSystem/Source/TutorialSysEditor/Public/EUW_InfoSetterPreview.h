@@ -24,7 +24,5 @@ public:
 	void InitializePreviewWidgetFromTutorialConditions(UBaseTutorialConditions* tutorialConditionsToUse);
 
 protected:
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	//UCanvasPanel* ParentPreview;
 
 };

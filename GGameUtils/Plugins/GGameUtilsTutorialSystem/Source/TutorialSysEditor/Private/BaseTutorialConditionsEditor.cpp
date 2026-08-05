@@ -71,7 +71,7 @@ void FBaseTutorialConditionsEditor::ActivatePreviewEditorWidget(UBaseTutorialCon
 {
 	// Load editor utility widget (uses a hardcoded path)
 
-	FString editorUtilityWidgetPath = TEXT("/Game/Tutorial/Blueprints/Utility/EWB_TutorialInfoSetterPreviewer.EWB_TutorialInfoSetterPreviewer");
+	FString editorUtilityWidgetPath = TEXT("/GGameUtilsTutorialSystem/Tutorials/Widgets/Utility/EWB_TutorialInfoSetterPreviewer.EWB_TutorialInfoSetterPreviewer");
 
 	UEditorUtilityWidgetBlueprint* editorWidget = Cast<UEditorUtilityWidgetBlueprint>(StaticLoadObject(UEditorUtilityWidgetBlueprint::StaticClass(), nullptr, *editorUtilityWidgetPath));
 
