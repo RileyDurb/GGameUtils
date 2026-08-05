@@ -9,6 +9,7 @@ void UEUW_InfoSetterPreview::NativeConstruct()
 	Super::NativeConstruct();
 }
 
+
 //void UEUW_InfoSetterPreview::InitializePreviewWidgetFromTutorialConditions(UBaseTutorialConditions* tutorialConditionsToUse)
 //{
 //	UUserWidget* widgetToPreview = CreateWidget(this, tutorialConditionsToUse->mTutorialPopupClass);

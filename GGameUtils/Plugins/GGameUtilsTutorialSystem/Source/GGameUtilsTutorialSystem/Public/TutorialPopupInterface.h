@@ -27,6 +27,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="EndBehaviour")
 	void TriggerTutorialEnd();
 
-	UFUNCTION(BlueprintImplementableEvent, Category="ReuseSetters")
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="ReuseSetters")
 	void ApplyVisualDataOverride(FTutorialBasicVisualsData visualDataToUse);
 };

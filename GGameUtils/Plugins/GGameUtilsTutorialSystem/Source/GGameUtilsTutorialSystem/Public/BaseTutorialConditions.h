@@ -120,6 +120,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
 	bool ShouldResetOnceComplete() const { return mResetToReadyAfterCompleting; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
+	bool UsesVisualDataOverride() const { return mUseVisualDataOverride; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
+	const FTutorialBasicVisualsData & GetVisualOverrideData() const { return mVisualData; }
+
 	ETutorialCompletionSaveType GetCompletionSaveType() const { return mSaveType; }
 
 	FTutorialTriggerFunc GetTutorialTriggerDelegate();  // Gets a delegate that manually activates the tutorial when invoked

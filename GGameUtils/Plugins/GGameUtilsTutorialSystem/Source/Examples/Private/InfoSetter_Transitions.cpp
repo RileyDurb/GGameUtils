@@ -16,4 +16,5 @@ UE_DEFINE_GAMEPLAY_TAG_COMMENT(GGameUtils_TutorialCloseTransitions_ToLeft, "GGam
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(GGameUtils_TutorialCloseTransitions_ToRight, "GGameUtils.TutorialCloseTransitions.ToRight", "Transition option where the widget flys out to the right");
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(GGameUtils_TutorialCloseTransitions_ToTop, "GGameUtils.TutorialCloseTransitions.ToTop", "Transition option where the widget flys out to the top");
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(GGameUtils_TutorialCloseTransitions_ToBottom, "GGameUtils.TutorialCloseTransitions.ToBottom", "Transition option where the widget flys out to the bottom");
+UE_DEFINE_GAMEPLAY_TAG_COMMENT(GGameUtils_TutorialCloseTransitions_FadeOut, "GGameUtils.TutorialCloseTransitions.FadeOut", "Transition option where the widget fades from visible to invisible, right in place");
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(GGameUtils_TutorialCloseTransitions_None, "GGameUtils.TutorialCloseTransitions.None", "Does no transition and immediately becomes invisible");
