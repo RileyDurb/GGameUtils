@@ -17,7 +17,7 @@ class UBPI_TutorialTransitions : public UInterface
 /**
  * 
  */
-class EXAMPLES_API IBPI_TutorialTransitions
+class TUTORIALSYSEXAMPLES_API IBPI_TutorialTransitions
 {
 	GENERATED_BODY()
 

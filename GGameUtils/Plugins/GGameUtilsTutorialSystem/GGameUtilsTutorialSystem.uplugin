@@ -24,7 +24,7 @@
 			]
 		},
 		{
-			"Name": "Examples",
+			"Name": "TutorialSysExamples",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
 			"PlatformAllowList": [

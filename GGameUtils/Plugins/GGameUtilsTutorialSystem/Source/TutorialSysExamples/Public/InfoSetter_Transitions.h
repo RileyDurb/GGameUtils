@@ -33,7 +33,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(GGameUtils_TutorialCloseTransitions_None);
  * 
  */
 UCLASS(Blueprintable)
-class EXAMPLES_API UInfoSetter_Transitions : public UTutorialInfoSetter
+class TUTORIALSYSEXAMPLES_API UInfoSetter_Transitions : public UTutorialInfoSetter
 {
 	GENERATED_BODY()
 
