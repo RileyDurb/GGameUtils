@@ -2,6 +2,7 @@
 
 
 #include "BaseTutorialConditionsEditor.h"
+//#ifndef WITH_EDITOR
 
 // For making the button in the details panel
 #include "Editor/PropertyEditor/Public/DetailLayoutBuilder.h"
@@ -94,3 +95,5 @@ void FBaseTutorialConditionsEditor::ActivatePreviewEditorWidget(UBaseTutorialCon
 
 
 #undef LOCTEXT_NAMESPACE
+
+//#endif

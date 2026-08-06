@@ -33,7 +33,7 @@
 		},
 		{
 			"Name": "TutorialSysEditor",
-			"Type": "Runtime",
+			"Type": "Editor",
 			"LoadingPhase": "PreDefault",
 			"PlatformAllowList": [
 				"Win64"
