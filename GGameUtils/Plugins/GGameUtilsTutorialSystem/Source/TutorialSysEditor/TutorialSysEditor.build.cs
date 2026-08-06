@@ -20,7 +20,7 @@ public class TutorialSysEditor : ModuleRules
 
 		if (Target.bBuildEditor)
 		{
-			PrivateDependencyModuleNames.AddRange(new string[] { "DetailCustomizations", "PropertyEditor", "EditorStyle", "Blutility", "UMGEditor", "EditorScriptingUtilities", "UMG"});
+			PrivateDependencyModuleNames.AddRange(new string[] { "DetailCustomizations", "PropertyEditor", "EditorStyle", "Blutility", "UMGEditor", "UMG"});
 			PublicDependencyModuleNames.AddRange(new string[] { "UnrealEd" });
 		}
 	}
