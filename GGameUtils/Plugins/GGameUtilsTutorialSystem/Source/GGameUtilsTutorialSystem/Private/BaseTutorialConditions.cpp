@@ -88,6 +88,14 @@ void UBaseTutorialConditions::CallTutorialUISetup_Implementation(APlayerControll
 	{
 		AddTutorialWidget(controllerToAddTo, mCreatedTutorialWidget); // Handles adding to viewport, letting how the widget is added be overwritten if UI is handled in a particular way
 	}
+
+
+	// Calls any setup the widget needs for itself, after it's been added to the viewport
+	if (mCreatedTutorialWidget->GetClass()->ImplementsInterface(UTutorialPopupInterface::StaticClass()))
+	{
+
+		ITutorialPopupInterface::Execute_SetupOnTutorialStart(mCreatedTutorialWidget);
+	}
 }
 
 void UBaseTutorialConditions::AddTutorialWidget_Implementation(APlayerController* controlerUsed, UUserWidget* widgetPopup)

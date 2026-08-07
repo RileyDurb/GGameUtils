@@ -24,8 +24,12 @@ class GGAMEUTILSTUTORIALSYSTEM_API ITutorialPopupInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	UFUNCTION(BlueprintImplementableEvent, Category="EndBehaviour")
-	void TriggerTutorialEnd();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="EndBehaviour")
+	void TriggerTutorialEnd(); // Whatever logic the tutorial needs to remove itself, such as playing an animation, and then removing itself from the viewport
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "StartBehaviour")
+	void SetupOnTutorialStart(); // Whatever setup, if any, that is needed for the widget. Called after the info setters are applied and the widget is added to the viewport
+
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="ReuseSetters")
 	void ApplyVisualDataOverride(FTutorialBasicVisualsData visualDataToUse);
