@@ -77,6 +77,8 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	APlayerController* playerController = GetPlayerControllerForTutorial();
 
+
+
 	if (playerController == nullptr)
 	{
 		ENetMode currNetMode = GetNetMode();
@@ -108,11 +110,11 @@ void UTutorialMonitor::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 		FGameplayTag tutorialTag = (*it).Key;
 
-		// If tutorial not done
+		// If tutorial not done, try triggering
 		if (currTutorial->IsCompleted() == false)
 		{
 
-			// Checks if tutorial is complete
+			// Checks if we can preemtively complete using the condition
 			bool tutorialDone = false;
 			if (currTutorial->IsActive() || currTutorial->CancelIfConpletedBeforeTrigger() == true) // Only checks if tutorial is active, or if it's enabled to be cancelled before it starts, like for a delayed hint
 			{
