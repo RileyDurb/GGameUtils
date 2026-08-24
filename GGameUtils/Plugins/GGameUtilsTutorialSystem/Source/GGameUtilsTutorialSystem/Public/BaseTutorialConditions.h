@@ -201,8 +201,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Visuals")
 	FTutorialBasicVisualsData mVisualData;
 
+	// Option to make info setters apply before the function to attach the widget to the viewport/ do your custom widget adding is called. May be helpful with some setups, but defaults to off 
 	UPROPERTY(EditAnywhere, Category = "SetupOverriding")
-	bool mApplyInfoSettersBeforeAddingToViewport = true;
+	bool mApplyInfoSettersBeforeAddingToViewport = false;
 
 	UPROPERTY(EditAnywhere, Category = "Saving Behaviour")
 	ETutorialCompletionSaveType mSaveType = ETutorialCompletionSaveType::SaveOnlyForSession;
