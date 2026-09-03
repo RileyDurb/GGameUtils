@@ -30,6 +30,16 @@ public:
 	FLinearColor imageColor = FLinearColor::White;
 };
 
+USTRUCT(BlueprintType)
+struct GGAMEUTILSTUTORIALSYSTEM_API FTutorialBasicBehaviourData
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EndingBehaviour")
+	float autoEndWaitTime = -1.0f;
+
+};
 /**
  * 
  */

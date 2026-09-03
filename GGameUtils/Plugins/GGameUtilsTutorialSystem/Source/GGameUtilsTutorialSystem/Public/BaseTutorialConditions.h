@@ -24,7 +24,7 @@ DECLARE_DYNAMIC_DELEGATE(FTutorialCompleteTriggerFunc);
 DECLARE_DYNAMIC_DELEGATE(FTutorialTriggerFunc);
 
 // Class for tutorial conditions as well as tutorial data /////////////////////////
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, EditInlineNew)
 class GGAMEUTILSTUTORIALSYSTEM_API UBaseTutorialConditions : public UObject
 {
 	GENERATED_BODY()
@@ -83,6 +83,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="GettersAndSetters")
 	TArray<UTutorialInfoSetter*> GetInfoSetters();
+
+	UFUNCTION(BlueprintCallable, Category = "GettersAndSetters")
+	void SetInfoSetters(TArray<UTutorialInfoSetter*> newInfoSetters);
 
 	// Parent Overriden functions /////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category="TutorialContext")
@@ -147,6 +150,8 @@ public:
 	void TrySetManuallyCompleted();
 
 	void SetInitTimestamp(float timestamp);
+
+	void SetAutoEndWaitTime(float newWaitTime);
 
 	/*
 	For resetting the completion status

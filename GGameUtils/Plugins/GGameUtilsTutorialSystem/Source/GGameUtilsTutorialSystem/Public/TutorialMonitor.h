@@ -10,6 +10,12 @@
 
 #include "BaseTutorialConditions.h"
 #include "DATutorialDefinitions.h"
+
+// Creating tutorials dynamically
+#include "TutorialInfoSetter.h"
+#include "StructDefinitionsFile.h"
+
+
 #include "TutorialMonitor.generated.h"
 
 
@@ -69,6 +75,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GettersAndSetters")
 	FGameplayTag GetTutorialTagRelativeToTutorial(FGameplayTag tutorialForStartingPosition, int howManyTutorialsAway);
+
+	UFUNCTION(BlueprintCallable, Category = "TutorialCreation")
+	void MakeDyanmicTutorial(FGameplayTag identifierToUse, FTutorialBasicBehaviourData behaviourStats, TArray<UTutorialInfoSetter*> visualInfoSetters);
 
 	// Public editable variables for setting up tutorials
 

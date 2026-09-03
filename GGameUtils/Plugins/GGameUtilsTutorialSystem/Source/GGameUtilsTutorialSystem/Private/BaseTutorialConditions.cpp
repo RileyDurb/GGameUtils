@@ -145,6 +145,11 @@ TArray<UTutorialInfoSetter*> UBaseTutorialConditions::GetInfoSetters()
 	return mAdditionalWidgetInfoSetters;
 }
 
+void UBaseTutorialConditions::SetInfoSetters(TArray<UTutorialInfoSetter*> newInfoSetters)
+{
+	mAdditionalWidgetInfoSetters = newInfoSetters;
+}
+
 UWorld* UBaseTutorialConditions::GetWorld() const
 {
 	return GetOuter()->GetWorld(); // Returns parent's world
@@ -239,6 +244,11 @@ void UBaseTutorialConditions::TrySetManuallyCompleted()
 void UBaseTutorialConditions::SetInitTimestamp(float timestamp)
 {
 	mInitTimestamp = timestamp;
+}
+
+void UBaseTutorialConditions::SetAutoEndWaitTime(float newWaitTime)
+{
+	mAutoEndWaitTime = newWaitTime;
 }
 
 void UBaseTutorialConditions::ResetCompletionStatusToReady()

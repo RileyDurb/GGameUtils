@@ -362,6 +362,33 @@ FGameplayTag UTutorialMonitor::GetTutorialTagRelativeToTutorial(FGameplayTag tut
 	return tutorialTags[foundIndex + howManyTutorialsAway];
 }
 
+void UTutorialMonitor::MakeDyanmicTutorial(FGameplayTag identifierTagToUse, FTutorialBasicBehaviourData behaviourStats, TArray<UTutorialInfoSetter*> visualInfoSetters)
+{
+	UBaseTutorialConditions* createdTutorial = NewObject<UBaseTutorialConditions>(this);
+	mCreatedTutorials.Add(identifierTagToUse, createdTutorial); // Creates a tutorial of the specificed tutorial type
+
+	float currInitTimestamp = GetWorld()->GetRealTimeSeconds();
+	createdTutorial->SetInitTimestamp(currInitTimestamp);
+
+	createdTutorial->SetInfoSetters(visualInfoSetters);
+
+	createdTutorial->SetAutoEndWaitTime(behaviourStats.autoEndWaitTime);
+
+	//// If tutorial is set to save between sessions, or for the whole session
+	//ETutorialCompletionSaveType saveType = mCreatedTutorials[identifierTagToUse]->GetCompletionSaveType();
+	//if (saveType == ETutorialCompletionSaveType::SaveBetweenSessions || saveType == ETutorialCompletionSaveType::SaveOnlyForSession)
+	//{
+	//	// Check for if tutorial has already been completed from the tutorial saves, and mark as complete if it is so it doesn't trigger
+	//	UTutorialSaveGameInstance* tutorialSaves = GetOwner()->GetGameInstance()->GetSubsystem<UTutorialSaveGameInstance>();
+	//	if (CanTriggerTutorial(identifierTagToUse) == false)
+	//	{
+	//		mCreatedTutorials[identifierTagToUse]->SetCompleted(true);
+	//	}
+	//}
+
+
+}
+
 bool UTutorialMonitor::CanTriggerTutorial(FGameplayTag tutorialTag)
 {
 	if (mCreatedTutorials.Contains(tutorialTag) == false)
